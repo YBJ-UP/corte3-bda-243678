@@ -9,7 +9,7 @@ from redis import Redis, ConnectionPool as RedisPool
 load_dotenv()
 _db_url: str = getenv("POSTGRES_URL", "postgres://app:12345678@postgres:5432/postgres")
 
-pg_pool = ConnectionPool(
+pg_pool: ConnectionPool = ConnectionPool(
     conninfo= _db_url,
     min_size=2,
     max_size=10,
@@ -25,7 +25,7 @@ _redis_host = _redis_host_port[0]
 _redis_port = int(_redis_host_port[1]) if len(_redis_host_port) > 1 else 6379
 _redis_db = int(_redis_parts[1]) if len(_redis_parts) > 1 else 0
 
-_redis_pool = RedisPool(
+_redis_pool: RedisPool = RedisPool(
     host=_redis_host,
     port=_redis_port,
     db=_redis_db,
@@ -35,7 +35,7 @@ _redis_pool = RedisPool(
     max_connections=20,
 )
 
-redis_client = Redis(connection_pool=_redis_pool)
+redis_client: Redis = Redis(connection_pool=_redis_pool)
 
 def check_connections() -> None:
     """Verifica que ambas conexiones estén activas al arrancar.
