@@ -1,7 +1,10 @@
-from pydantic import BaseModel
+from typing import Annotated
+
+from pydantic import BaseModel, StringConstraints
 
 
 class Owner(BaseModel):
     id: int
-    nombre: str
-    telefono: str
+    nombre: Annotated[str, StringConstraints(max_length=100)]
+    telefono: Annotated[str, StringConstraints(max_length=20)]
+    email: Annotated[str, StringConstraints(max_length=100)]
