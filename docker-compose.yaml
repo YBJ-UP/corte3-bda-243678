@@ -10,13 +10,54 @@ services:
     ports:
       - "5433:5432"
     volumes:
+      - pgdata:/var/lib/postgresql/data
       - ./db:/docker-entrypoint-initdb.d
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
       interval: 10s
       timeout: 5s
       retries: 5
-      
+      start_period: 15s
+    networks:
+      - redis-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: vet-redis
+    # Configuración de Redis como cache:
+    # --appendonly yes        → persistencia AOF (para inspeccionar datos en clase)
+    # --maxmemory 256mb       → límite de memoria
+    # --maxmemory-policy allkeys-lru → evicción LRU cuando se llena
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - "6379:6379"
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+    networks:
+      - redis-net
+
+  backend:
+    build: ./api
+    container_name: vet-api
+    environment:
+      DATABASE_URL: postgresql://bda:bda@postgres:5432/bda
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    restart: on-failure
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - redis-demo-net
+
   nextjs:
     build:
       context: ./
@@ -28,6 +69,13 @@ services:
     env_file:
       - .env
     depends_on:
-      - postgres
+      backend:
+        condition: service_healthy
+
 volumes:
-  postgres_data:
+  pgdata:
+  redisdata:
+
+  networks:
+  redis-demo-net:
+    driver: bridge
