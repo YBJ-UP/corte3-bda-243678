@@ -7,9 +7,9 @@ export default function Layout({
 }>){
     return (
         <>
-            <div>
-                <p>Veterinaria TuxMascotas</p> //es lo que se me ocurrió, no lo pensé mucho
-                <Link href={"/"}>Cerrar sesión</Link>
+            <div className="flex items-center justify-between bg-green-700 py-10 px-15">
+                <p className="text-xl font-bold">Veterinaria TuxMascotas</p>
+                <Link href={"/"} className="font-medium hover:font-bold">Cerrar sesión</Link>
             </div>
             {children}
         </>
