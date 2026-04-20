@@ -17,6 +17,7 @@ DROP ROLE IF EXISTS Veterinario;
 DROP ROLE IF EXISTS app; --la app en sí no hace nadota, los roles se cambian en el backend
 
 CREATE ROLE Administrador;
+GRANT ALL PRIVILEGES ON TABLE duenos TO Administrador;
 CREATE ROLE Recepcionista;
 CREATE ROLE Veterinario;
 
