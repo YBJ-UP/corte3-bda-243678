@@ -6,3 +6,6 @@ class Validator:
             if c in self.InvalidCharacters:
                 return (False, c)
         return (True, "")
+    
+    def validateNum(self, field: int):
+        print("hola")

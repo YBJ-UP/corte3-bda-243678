@@ -1,4 +1,6 @@
-from fastapi import FastAPI
+from typing import Annotated
+
+from fastapi import FastAPI, Path
 
 from lib.db import pg_pool, redis_client, check_connections
 
@@ -26,5 +28,5 @@ def get_owners() -> Response:
     return Admin.getAllOwners(OWNER_CACHE_PREFIX)
 
 @app.get("/admin/owners/{id}")
-def get_owner_by_id(id:int) -> Response:
+def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response:
     return Admin.getOwner(OWNER_CACHE_PREFIX, id)

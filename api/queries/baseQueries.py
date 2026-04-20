@@ -46,14 +46,11 @@ class BaseQueries:
             conn.execute(f"SET LOCAL ROLE {role}") # me sale todo en rojo pero funciona xd
             if type == "all":
                 row = conn.execute(query).fetchall()
-                if row.__len__() < 1:
-                    raise HTTPException(status_code=404, detail="No se pudieron conseguir los usuarios")
             else:
-                row = conn.execute(query).fetchone()
+                assert id is not None
+                row = conn.execute(query, (id,)).fetchone()
                 if row is None:
                     raise HTTPException(status_code=404, detail="No se pudieron conseguir los usuarios")
-
-
 
         elapsed: float = (time.perf_counter()-t0) * 1000
         return {
