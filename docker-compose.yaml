@@ -1,0 +1,33 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vetDB
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER_ADMIN}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_ADMIN}
+      POSTGRES_DB: ${POSTGRES_DB_NAME}
+    ports:
+      - "5433:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
+  nextjs:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: nextjs_container
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+volumes:
+  postgres_data:
