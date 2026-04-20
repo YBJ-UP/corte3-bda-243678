@@ -1,0 +1,12 @@
+{
+    "python.analysis.autoIndent": true,
+    "python.analysis.enablePerfTelemetry": false,
+    "python.analysis.typeEvaluation.strictDictionaryInference": true,
+    "python.analysis.autoFormatStrings": true,
+    "python.analysis.autoImportCompletions": true,
+    "python.analysis.inlayHints.callArgumentNames": "all",
+    "python.analysis.inlayHints.functionReturnTypes": true,
+    "python.analysis.inlayHints.variableTypes": true,
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.typeEvaluation.strictListInference": true
+}
