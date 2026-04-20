@@ -67,7 +67,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nextjs_container
+    container_name: vet-front 
     restart: unless-stopped
     ports:
       - "3000:3000"
