@@ -13,7 +13,7 @@ app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 validator = Validator()
 Admin = AdminQueries(pg_pool= pg_pool, redis_client= redis_client, validator= validator)
 
-OWNER_CACHE_PREFIX = "cache:owner:"
+OWNER_CACHE_PREFIX = "cache:owner"
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:

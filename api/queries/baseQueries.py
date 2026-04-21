@@ -23,11 +23,11 @@ class BaseQueries:
     def __get_from_cache(self, cache_key: str):
         cached = self.__redis_client.get(cache_key)
         if cached:
-            return json.dumps(cached)
+            return json.loads(cached)
         return None
     
     def __add_to_cache(self, cache_key: str, data: Any) -> None:
-        stringified_data: str = json.dumps(data, default= str)
+        stringified_data = json.dumps(data, default=str)
         self.__redis_client.setex(cache_key, self.CACHE_TTL, stringified_data)
         return None
     
@@ -53,7 +53,7 @@ class BaseQueries:
             id: int | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{cachePrefix}{id}" if id is not None else cachePrefix
+        cache_key: str = f"{cachePrefix}:{id}" if id is not None else cachePrefix
 
         cached = self.__get_from_cache(cache_key)
         if cached is not None:
@@ -62,7 +62,7 @@ class BaseQueries:
             return {
                 "cache_hit": True,
                 "latency_ms": round(elapsed, 2),
-                "data": json.loads(cached)
+                "data": cached
             }
 
         row:T
