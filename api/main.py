@@ -24,6 +24,10 @@ def startup() -> None:
 def health():
     return { "success": True, "message": "Api en ejecución" }
 
+@app.post("/cache/flush")
+def flush():
+    return Admin.wipeAllCacheWrapper()
+
 @app.get("/admin/owners")
 def get_owners() -> Response[list[Owner]]:
     return Admin.getAllOwners(OWNER_CACHE_PREFIX)

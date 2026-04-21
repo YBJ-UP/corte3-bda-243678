@@ -1,6 +1,6 @@
 import json
 import time
-from typing import Literal
+from typing import Any, Literal
 
 from fastapi import HTTPException
 from psycopg_pool import ConnectionPool
@@ -26,11 +26,22 @@ class BaseQueries:
             return json.dumps(cached)
         return None
     
-    def __add_to_cahce(self) -> None:
+    def __add_to_cache(self, cache_key: str, data: Any) -> None:
+        stringified_data: str = json.dumps(data, default= str)
+        self.__redis_client.setex(cache_key, self.CACHE_TTL, stringified_data)
         return None
     
-    def __wipe_cache(self) -> None:
+    def __wipe_cache(self, cache_key: str) -> None:
+        self.__redis_client.delete(cache_key)
         return None
+    
+    def wipeAllCache(self, role: Literal["Administrador", "Recepcionista", "Veterinario"]):
+        if role == "Administrador":
+            self.__redis_client.flushdb()
+            print("[FLUSH] caché vaciado", flush= True)
+            return { "message":"Caché vaciado", "keys_remaining": self.__redis_client.dbsize() }
+        else:
+            raise HTTPException(403, { "message":"Sin permisos necesarios para vacíar caché." })
 
     def get[T](
             self,
@@ -65,7 +76,7 @@ class BaseQueries:
                 if row is None:
                     raise HTTPException(status_code=404, detail="No se encontró el usuario")
 
-        # aqui irá el cache pero ahorita1
+        self.__add_to_cache(cache_key=cache_key, data=row)
 
         elapsed: float = (time.perf_counter()-t0) * 1000
         return {

@@ -8,6 +8,9 @@ class AdminQueries(BaseQueries):
     SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
     ROLE = "Administrador"
 
+    def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
+        return self.wipeAllCache(self.ROLE)
+
     def getAllOwners(self, cachePrefix: str) -> Response[list[Owner]]:
         return self.get(
             type='all',
