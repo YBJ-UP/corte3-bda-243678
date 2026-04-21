@@ -1,27 +1,31 @@
+from psycopg_pool import ConnectionPool
+from redis import Redis
+
 from model.owner import OwnerBaseModel
 from model.response import DeleteResponse, PatchResponse, Response
-from queries.baseQueries import BaseQueries
+from queries.user import User
 
-class AdminQueries(BaseQueries):
+class AdminQueries(User):
     ROLE = "Administrador"
 
-    def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
-        return self._wipeAllCache(self.ROLE)
+    def __init__(self, pg_pool: ConnectionPool, redis_client: Redis) -> None:
+        super().__init__(pg_pool= pg_pool, redis_client= redis_client)
 
-    def getAll(self, cachePrefix: str, tableAlias: str, query: str) -> Response[list[OwnerBaseModel]]:
-        return self._get(
-            type='all',
-            model= list[OwnerBaseModel],
+    def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
+        return self._wipeAllCacheWrapper(self.ROLE)
+
+    def getAll[T](self, model: type[T], cachePrefix: str, tableAlias: str, query: str) -> Response[T]:
+        return self._getAll(
+            model= model,
             cachePrefix=cachePrefix,
             tableAlias= tableAlias,
             query= query,
             role= self.ROLE
         )
 
-    def getOne(self, cachePrefix: str, id: int, tableAlias: str, query: str) -> Response[OwnerBaseModel]:
-        return self._get(
-            type="one",
-            model= OwnerBaseModel,
+    def getOne[T](self, model: type[T], cachePrefix: str, id: int, tableAlias: str, query: str) -> Response[T]:
+        return self._getOne(
+            model= model,
             cachePrefix= cachePrefix,
             tableAlias= tableAlias,
             query= query,
@@ -29,10 +33,9 @@ class AdminQueries(BaseQueries):
             id= id
         )
     
-    def patch(self, cachePrefix: str, id: int, data: OwnerBaseModel, tableName: str) -> PatchResponse[OwnerBaseModel]:
-        return self._add_or_patch(
-            isPatch= True,
-            model= OwnerBaseModel,
+    def patch[T](self, model: type[T], cachePrefix: str, id: int, data: T, tableName: str) -> PatchResponse[T]:
+        return self._patch(
+            model= model,
             cachePrefix= cachePrefix,
             tableName= tableName,
             data= data,
@@ -51,8 +54,7 @@ class AdminQueries(BaseQueries):
         )
 
     def delete(self, cachePrefix: str, id: int, tableName: str, query: str) -> DeleteResponse:
-        return self._delete(
-            model= OwnerBaseModel,
+        return self._deleteWrap(
             cachePrefix= cachePrefix,
             tableName= tableName,
             query= query,

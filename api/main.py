@@ -30,20 +30,45 @@ def flush():
 
 @app.get("/admin/owners")
 def get_owners() -> Response[list[OwnerBaseModel]]:
-    return Admin.getAll(cachePrefix=TABLES["OWNER"].CACHE_PREFIX, tableAlias=TABLES["OWNER"].ALIAS, query=TABLES["OWNER"].SELECT_ALL_QUERY)
+    return Admin.getAll(
+        model=list[OwnerBaseModel],
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        tableAlias= TABLES["OWNER"].ALIAS,
+        query=TABLES["OWNER"].SELECT_ALL_QUERY
+        )
 
 @app.get("/admin/owners/{id}")
 def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[OwnerBaseModel]:
-    return Admin.getOne(cachePrefix=TABLES["OWNER"].CACHE_PREFIX, id=id, tableAlias= TABLES["OWNER"].ALIAS, query=TABLES["OWNER"].SELECT_ONE_QUERY)
+    return Admin.getOne(
+        model=OwnerBaseModel,
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        id=id,
+        tableAlias= TABLES["OWNER"].ALIAS,
+        query= TABLES["OWNER"].SELECT_ONE_QUERY)
 
 @app.post('/admin/owners')
 def add_owner(data: OwnerBaseModel) -> PatchResponse[OwnerBaseModel]:
-    return Admin.insert(cachePrefix= TABLES["OWNER"].CACHE_PREFIX, data= data, tableName=TABLES["OWNER"].NAME)
+    return Admin.insert(
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        data= data,
+        tableName= TABLES["OWNER"].NAME
+        )
 
 @app.patch("/admin/owners/{id}")
 def patch_owner(id: int, data: OwnerBaseModel) -> PatchResponse[OwnerBaseModel]:
-    return Admin.patch(cachePrefix=TABLES["OWNER"].CACHE_PREFIX, id= id, data= data, tableName= TABLES["OWNER"].NAME)
+    return Admin.patch(
+        model=OwnerBaseModel,
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        id= id,
+        data= data,
+        tableName= TABLES["OWNER"].NAME
+        )
 
 @app.delete("/admin/owners/{id}")
 def delete_owner(id: int) -> DeleteResponse:
-    return Admin.delete(cachePrefix= TABLES["OWNER"].CACHE_PREFIX, id= id, tableName= TABLES["OWNER"].NAME, query= TABLES["OWNER"].DELETE_QUERY)
+    return Admin.delete(
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        id= id,
+        tableName= TABLES["OWNER"].NAME,
+        query= TABLES["OWNER"].DELETE_QUERY
+        )

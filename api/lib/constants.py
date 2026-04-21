@@ -18,5 +18,13 @@ TABLES = {
         SELECT_ALL_QUERY="SELECT * FROM duenos;",
         SELECT_ONE_QUERY="SELECT * FROM duenos WHERE id=%s;",
         DELETE_QUERY="DELETE FROM duenos WHERE id=%s"
+    ),
+    "VET": tabla(
+        NAME="veterinarios",
+        ALIAS="Veterinarios",
+        CACHE_PREFIX="cache:vet",
+        SELECT_ALL_QUERY="SELECT * FROM veterinarios;",
+        SELECT_ONE_QUERY="SELECT * FROM veterinarios WHERE id=%s",
+        DELETE_QUERY="DELETE FROM veterinarios WHERE id=%s;"
     )
 }

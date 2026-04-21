@@ -159,9 +159,8 @@ class BaseQueries:
             "updated_data": result
         }
     
-    def _delete[T](
+    def _delete(
             self,
-            model: type[T],
             cachePrefix: str,
             tableName: str,
             query: str,
@@ -170,10 +169,10 @@ class BaseQueries:
     ) -> DeleteResponse:
         t0: float = time.perf_counter()
 
-        result: T
+        result: Any
         with self.__pg_pool.connection() as conn:
             conn.execute(f"SET LOCAL ROLE {role}")
-            result: T = conn.execute(query, (id,)).fetchone()
+            result: Any = conn.execute(query, (id,)).fetchone()
             conn.commit()
 
         if result is None:
