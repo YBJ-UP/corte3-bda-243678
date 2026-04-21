@@ -1,3 +1,4 @@
+from model.owner import Owner
 from model.response import Response
 from queries.baseQueries import BaseQueries
 
@@ -7,17 +8,19 @@ class AdminQueries(BaseQueries):
     SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
     ROLE = "Administrador"
 
-    def getAllOwners(self, cachePrefix: str) -> Response:
+    def getAllOwners(self, cachePrefix: str) -> Response[list[Owner]]:
         return self.get(
             type='all',
+            model= list[Owner],
             cachePrefix=cachePrefix,
             query= self.ALL_OWNERS_QUERY,
             role= self.ROLE
         )
 
-    def getOwner(self, cachePrefix: str, id: int) -> Response:
+    def getOwner(self, cachePrefix: str, id: int) -> Response[Owner]:
         return self.get(
             type="one",
+            model= Owner,
             cachePrefix= cachePrefix,
             query= self.SELECT_OWNER_QUERY,
             role= self.ROLE,

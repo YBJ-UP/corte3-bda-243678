@@ -1,6 +1,6 @@
 import json
 import time
-from typing import Any, Literal
+from typing import Literal
 
 from fastapi import HTTPException
 from psycopg_pool import ConnectionPool
@@ -20,16 +20,17 @@ class BaseQueries:
 
     CACHE_TTL = 300
 
-    def get(
+    def get[T](
             self,
+            model: type[T],
             type: Literal["one","all"],
             cachePrefix: str,
             query: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
             id: int | None = None
-        ) -> Response:
+        ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key = f"{cachePrefix}"
+        cache_key: str = f"{cachePrefix}{id}"
 
         cached = self.__redis_client.get(cache_key)
         if cached is not None:
@@ -41,16 +42,18 @@ class BaseQueries:
                 "data": json.loads(cached)
             }
 
-        row = Any
+        row:T
         with self.__pg_pool.connection() as conn:
             conn.execute(f"SET LOCAL ROLE {role}") # me sale todo en rojo pero funciona xd
             if type == "all":
-                row = conn.execute(query).fetchall()
+                row: T = conn.execute(query).fetchall() # no se usa el "" pero si no lo pongo no me da el tipado el ide
             else:
                 assert id is not None
-                row = conn.execute(query, (id,)).fetchone()
+                row: T = conn.execute(query, (id,)).fetchone()
                 if row is None:
-                    raise HTTPException(status_code=404, detail="No se pudieron conseguir los usuarios")
+                    raise HTTPException(status_code=404, detail="No se encontró el usuario")
+
+        # aqui irá el cache pero ahorita1
 
         elapsed: float = (time.perf_counter()-t0) * 1000
         return {
