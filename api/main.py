@@ -5,7 +5,7 @@ from fastapi import FastAPI, Path
 from lib.db import pg_pool, redis_client, check_connections
 
 from model.owner import Owner
-from model.response import Response
+from model.response import PatchResponse, Response
 from queries.admin.queries import AdminQueries
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
@@ -34,3 +34,7 @@ def get_owners() -> Response[list[Owner]]:
 @app.get("/admin/owners/{id}")
 def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[Owner]:
     return Admin.getOwner(OWNER_CACHE_PREFIX, id)
+
+@app.post('/admin/owners')
+def add_owner(id: Annotated[int, Path(gt=0)], data: Owner) -> PatchResponse[Owner]:
+    return Admin.insertOwner(cachePrefix= OWNER_CACHE_PREFIX, data= data)

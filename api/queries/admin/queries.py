@@ -6,11 +6,11 @@ from queries.baseQueries import BaseQueries
 class AdminQueries(BaseQueries):
     ALL_OWNERS_QUERY = "SELECT * FROM duenos;"
     SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
-    DELETE_OWNER_QUERY = "DELETE FROM duenos WHERE id:%s"
+    DELETE_OWNER_QUERY = "DELETE FROM duenos WHERE id=%s"
     ROLE = "Administrador"
 
     OWNER_TABLE_NAME = "duenos"
-    OWNER_TABLE_DESCRIPTION = "dueños"
+    OWNER_TABLE_ALIAS = "dueños"
 
     def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
         return self._wipeAllCache(self.ROLE)
@@ -20,7 +20,7 @@ class AdminQueries(BaseQueries):
             type='all',
             model= list[Owner],
             cachePrefix=cachePrefix,
-            tableName= self.OWNER_TABLE_DESCRIPTION,
+            tableName= self.OWNER_TABLE_ALIAS,
             query= self.ALL_OWNERS_QUERY,
             role= self.ROLE
         )
@@ -47,15 +47,14 @@ class AdminQueries(BaseQueries):
             id= id
         )
     
-    def insertOwner(self, cachePrefix: str, id: int, data: Owner) -> PatchResponse[Owner]:
+    def insertOwner(self, cachePrefix: str, data: Owner) -> PatchResponse[Owner]:
         return self._add_or_patch(
             isPatch= False,
             model= Owner,
             cachePrefix= cachePrefix,
             tableName= self.OWNER_TABLE_NAME,
             data= data,
-            role= self.ROLE,
-            id= id
+            role= self.ROLE
         )
 
     def deleteOwner(self, cachePrefix: str, id: int) -> DeleteResponse:

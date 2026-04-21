@@ -33,7 +33,7 @@ class BaseQueries:
         return None
     
     def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
-        return (tuple(data.keys()), tuple(data.values()))
+        return (tuple(data.model_dump(exclude_unset=True).keys()), tuple(data.model_dump(exclude_unset=True).values()))
     
     def __prepare_clauses(self, keys: tuple[str,...]) -> list[str]:
         clauses: list[str] = []
@@ -41,7 +41,7 @@ class BaseQueries:
             clauses.append(f"{key}= %s")
         return clauses
 
-    def __prepare_query[T](self, model: type[T], isPatch: bool, data: T, id: int, tableName: str) -> tuple[str, tuple[str,...]]:
+    def __prepare_query[T](self, model: type[T], isPatch: bool, data: T, tableName: str, id: int | None = None) -> tuple[str, tuple[str,...]]:
         keys, values = self.__convert_to_tuples(model= model, data= data)
 
         clauses: list[str] = self.__prepare_clauses(keys)
@@ -49,15 +49,16 @@ class BaseQueries:
         valuesList: list[str] = list(values)
         preparedQuery: str = ''
         if isPatch:
+            assert id is not None
             preparedQuery: str = f"UPDATE {tableName} SET {", ".join(clauses)} WHERE ID = %s RETURNING *;"
             valuesList.append(str(id))
         else:
-            preparedQuery: str = ""
+            preparedQuery: str = f"INSERT INTO {tableName} ({", ".join(keys)}) VALUES {", ".join(["%s"] * len(keys))}; RETURNING *"
         
 
         return preparedQuery, tuple(valuesList)
     
-    def _add_or_patch[T](self, model: type[T], isPatch: bool, cachePrefix: str, tableName: str, data: T, role: Literal['Administrador', 'Recepcionista', 'Veterinario'], id: int):
+    def _add_or_patch[T](self, model: type[T], isPatch: bool, cachePrefix: str, tableName: str, data: T, role: Literal['Administrador', 'Recepcionista', 'Veterinario'], id: int | None = None) -> PatchResponse[T]:
         query, values = self.__prepare_query(model= model, isPatch= True, data= data, id= id, tableName= tableName)
         return self.__patch_insert(
             model= model,
@@ -130,7 +131,7 @@ class BaseQueries:
             query: str,
             params: tuple[str, ...],
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
-            id: int
+            id: int | None = None
     ) -> PatchResponse[T]:
         t0: float = time.perf_counter()
 
@@ -144,8 +145,11 @@ class BaseQueries:
             raise HTTPException(404, f"No se encontró el {tableName} buscado")
         
         if isPatch:
+            assert id is not None
             cache_key: str = f"{cachePrefix}:{id}"
             self.__wipe_cache(cache_key)
+        else:
+            self.__wipe_cache(cachePrefix)
         
         elapsed: float = (time.perf_counter() - t0) * 1000
         return {
@@ -169,7 +173,7 @@ class BaseQueries:
         result: T
         with self.__pg_pool.connection() as conn:
             conn.execute(f"SET LOCAL ROLE {role}")
-            result: T = conn.execute(query).fetchone()
+            result: T = conn.execute(query, (id,)).fetchone()
             conn.commit()
 
         if result is None:
