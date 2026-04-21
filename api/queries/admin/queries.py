@@ -1,3 +1,5 @@
+from typing import Literal
+
 from model.owner import Owner
 from model.response import Response
 from queries.baseQueries import BaseQueries
@@ -7,9 +9,13 @@ class AdminQueries(BaseQueries):
     ALL_OWNERS_QUERY = "SELECT * FROM duenos;"
     SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
     DELETE_OWNER_QUERY = "DELETE FROM duenos WHERE id:%s"
+    INSERT_OWNER_QUERY = "INSERT INTO duenos (nombre, telefono, email) VALUES %s, %s, %s"
     ROLE = "Administrador"
 
     OWNER_TABLE_NAME = "dueños"
+
+    def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        return (tuple(data.keys()), tuple(data.values()))
 
     def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
         return self.wipeAllCache(self.ROLE)
@@ -35,12 +41,14 @@ class AdminQueries(BaseQueries):
             id= id
         )
     
-    def patchOwner(self, cachePrefix: str, id: int):
+    def patchOwner(self, cachePrefix: str, id: int, data: Owner):
+        keys, values = self.__convert_to_tuples( model=Owner, data=data)
         return self.patch(
             model= Owner,
             cachePrefix= cachePrefix,
             tableName= self.OWNER_TABLE_NAME,
             query= "",
+            params= values,
             role= self.ROLE,
             id= id
         )

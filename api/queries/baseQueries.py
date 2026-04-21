@@ -89,6 +89,7 @@ class BaseQueries:
             cachePrefix: str,
             tableName: str,
             query: str,
+            params: tuple[str, ...],
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
             id: int
     ) -> PatchResponse[T]:
@@ -97,7 +98,7 @@ class BaseQueries:
         result: T
         with self.__pg_pool.connection() as conn:
             conn.execute(f"SET LOCAL ROLE {role}")
-            result: T = conn.execute(query).fetchone()
+            result: T = conn.execute(query, params).fetchone()
             conn.commit()
 
         if result is None:
