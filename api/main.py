@@ -4,14 +4,13 @@ from fastapi import FastAPI, Path
 
 from lib.db import pg_pool, redis_client, check_connections
 
-from model.characterValidator import Validator
 from model.owner import Owner
 from model.response import Response
 from queries.admin.queries import AdminQueries
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
-validator = Validator()
-Admin = AdminQueries(pg_pool= pg_pool, redis_client= redis_client, validator= validator)
+
+Admin = AdminQueries(pg_pool= pg_pool, redis_client= redis_client)
 
 OWNER_CACHE_PREFIX = "cache:owner"
 

@@ -6,17 +6,14 @@ from fastapi import HTTPException
 from psycopg_pool import ConnectionPool
 from redis import Redis
 
-from model.characterValidator import Validator
-from model.response import Response
+from model.response import DeleteResponse, PatchResponse, Response
 
 class BaseQueries:
     __pg_pool: ConnectionPool
     __redis_client: Redis
-    validator: Validator
-    def __init__(self, pg_pool: ConnectionPool, redis_client: Redis, validator: Validator) -> None:
+    def __init__(self, pg_pool: ConnectionPool, redis_client: Redis) -> None:
         self.__pg_pool = pg_pool
         self.__redis_client = redis_client
-        self.validator = validator
 
     CACHE_TTL = 300
 
@@ -49,6 +46,7 @@ class BaseQueries:
             type: Literal["one","all"],
             cachePrefix: str,
             query: str,
+            tableName: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
             id: int | None = None
         ) -> Response[T]:
@@ -69,12 +67,12 @@ class BaseQueries:
         with self.__pg_pool.connection() as conn:
             conn.execute(f"SET LOCAL ROLE {role}") # me sale todo en rojo pero funciona xd
             if type == "all":
-                row: T = conn.execute(query).fetchall() # no se usa el "" pero si no lo pongo no me da el tipado el ide
+                row: T = conn.execute(query).fetchall()
             else:
                 assert id is not None
                 row: T = conn.execute(query, (id,)).fetchone()
                 if row is None:
-                    raise HTTPException(status_code=404, detail="No se encontró el usuario")
+                    raise HTTPException(status_code=404, detail=f"No se encontró el {tableName} buscado")
 
         self.__add_to_cache(cache_key=cache_key, data=row)
 
@@ -83,4 +81,65 @@ class BaseQueries:
             "cache_hit": False,
             "latency_ms": round(elapsed, 2),
             "data": row
+        }
+    
+    def patch[T](
+            self,
+            model: type[T],
+            cachePrefix: str,
+            tableName: str,
+            query: str,
+            role: Literal["Administrador", "Recepcionista", "Veterinario"],
+            id: int
+    ) -> PatchResponse[T]:
+        t0: float = time.perf_counter()
+
+        result: T
+        with self.__pg_pool.connection() as conn:
+            conn.execute(f"SET LOCAL ROLE {role}")
+            result: T = conn.execute(query).fetchone()
+            conn.commit()
+
+        if result is None:
+            raise HTTPException(404, f"No se encontró el {tableName} buscado")
+        
+        cache_key: str = f"{cachePrefix}:{id}"
+        self.__wipe_cache(cache_key)
+        
+        elapsed: float = (time.perf_counter() - t0) * 1000
+        return {
+            "message": "Dato actualizado con éxito.",
+            "cache_invalidated":  True,
+            "latency_ms": round(elapsed, 2),
+            "updated_data": result
+        }
+    
+    def delete[T](
+            self,
+            model: type[T],
+            cachePrefix: str,
+            tableName: str,
+            query: str,
+            role: Literal["Administrador", "Recepcionista", "Veterinario"],
+            id: int
+    ) -> DeleteResponse:
+        t0: float = time.perf_counter()
+
+        result: T
+        with self.__pg_pool.connection() as conn:
+            conn.execute(f"SET LOCAL ROLE {role}")
+            result: T = conn.execute(query).fetchone()
+            conn.commit()
+
+        if result is None:
+            raise HTTPException(404, f"No se encontró el {tableName} buscado")
+        
+        cache_key: str = f"{cachePrefix}:{id}"
+        self.__wipe_cache(cache_key)
+        
+        elapsed: float = (time.perf_counter() - t0) * 1000
+        return {
+            "message": "Dato eliminado con éxito.",
+            "cache_invalidated":  True,
+            "latency_ms": round(elapsed, 2)
         }
