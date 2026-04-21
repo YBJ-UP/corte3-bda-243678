@@ -20,6 +20,18 @@ class BaseQueries:
 
     CACHE_TTL = 300
 
+    def __get_from_cache(self, cache_key: str):
+        cached = self.__redis_client.get(cache_key)
+        if cached:
+            return json.dumps(cached)
+        return None
+    
+    def __add_to_cahce(self) -> None:
+        return None
+    
+    def __wipe_cache(self) -> None:
+        return None
+
     def get[T](
             self,
             model: type[T],
@@ -30,9 +42,9 @@ class BaseQueries:
             id: int | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{cachePrefix}{id}"
+        cache_key: str = f"{cachePrefix}{id}" if id is not None else cachePrefix
 
-        cached = self.__redis_client.get(cache_key)
+        cached = self.__get_from_cache(cache_key)
         if cached is not None:
             elapsed: float = (time.perf_counter()-t0) * 1000
             print(f"[CACHE HIT] ({elapsed:.2f})", flush=True)
