@@ -1,5 +1,5 @@
 from model.owner import Owner
-from model.response import PatchResponse, Response
+from model.response import DeleteResponse, PatchResponse, Response
 from queries.baseQueries import BaseQueries
 
 
@@ -7,7 +7,6 @@ class AdminQueries(BaseQueries):
     ALL_OWNERS_QUERY = "SELECT * FROM duenos;"
     SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
     DELETE_OWNER_QUERY = "DELETE FROM duenos WHERE id:%s"
-    INSERT_OWNER_QUERY = "INSERT INTO duenos (nombre, telefono, email) VALUES %s, %s, %s"
     ROLE = "Administrador"
 
     OWNER_TABLE_NAME = "duenos"
@@ -59,7 +58,7 @@ class AdminQueries(BaseQueries):
             id= id
         )
 
-    def deleteOwner(self, cachePrefix: str, id: int):
+    def deleteOwner(self, cachePrefix: str, id: int) -> DeleteResponse:
         return self._delete(
             model= Owner,
             cachePrefix= cachePrefix,
