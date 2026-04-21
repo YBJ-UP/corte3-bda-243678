@@ -28,6 +28,27 @@ def health():
 def flush():
     return Admin.wipeAllCacheWrapper()
 
+@app.get("/cache/info")
+def cacheInfo():
+    info = redis_client.info("stats")
+    info_server = redis_client.info("server")
+    info_memory = redis_client.info("memory")
+
+    hits = info.get("keyspace_hits", 0)
+    misses = info.get("keyspace_misses", 0)
+    total = hits + misses
+
+    return {
+        "redis_version": info_server.get("redis_version"),
+        "used_memory_human": info_memory.get("used_memory_human"),
+        "keyspace_hits": hits,
+        "keyspace_misses": misses,
+        # Evitar división por cero cuando no ha habido requests aún
+        "hit_ratio": round((hits / total) * 100, 2) if total > 0 else 0.0,
+        "evicted_keys": info.get("evicted_keys", 0),
+        "total_keys": redis_client.dbsize(),
+    }
+
 @app.get("/admin/owners")
 def get_owners() -> Response[list[OwnerBaseModel]]:
     return Admin.getAll(
