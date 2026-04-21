@@ -16,6 +16,21 @@ class AdminQueries(BaseQueries):
 
     def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
         return (tuple(data.keys()), tuple(data.values()))
+    
+    def __patchOwner(self, cachPrefix: bool)
+    
+    def __add_or_patch(self, isPatch: bool, cachePrefix: str, id: int, query: str):
+        if isPatch:
+                return self.patch_insert(
+                model= Owner,
+                isPatch= True,
+                cachePrefix= cachePrefix,
+                tableName= self.OWNER_TABLE_NAME,
+                query= query,
+                params= values,
+                role= self.ROLE,
+                id= id
+            )
 
     def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
         return self.wipeAllCache(self.ROLE)
@@ -43,13 +58,11 @@ class AdminQueries(BaseQueries):
     
     def patchOwner(self, cachePrefix: str, id: int, data: Owner):
         keys, values = self.__convert_to_tuples( model=Owner, data=data)
-        return self.patch(
-            model= Owner,
+        query = "algo"
+        return self.__add_or_patch(
+            isPatch= True,
             cachePrefix= cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
-            query= "",
-            params= values,
-            role= self.ROLE,
+            query= query,
             id= id
         )
     

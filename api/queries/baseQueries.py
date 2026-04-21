@@ -83,8 +83,9 @@ class BaseQueries:
             "data": row
         }
     
-    def patch[T](
+    def patch_insert[T](
             self,
+            isPatch: bool,
             model: type[T],
             cachePrefix: str,
             tableName: str,
@@ -104,8 +105,9 @@ class BaseQueries:
         if result is None:
             raise HTTPException(404, f"No se encontró el {tableName} buscado")
         
-        cache_key: str = f"{cachePrefix}:{id}"
-        self.__wipe_cache(cache_key)
+        if isPatch:
+            cache_key: str = f"{cachePrefix}:{id}"
+            self.__wipe_cache(cache_key)
         
         elapsed: float = (time.perf_counter() - t0) * 1000
         return {
