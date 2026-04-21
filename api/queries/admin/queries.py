@@ -1,5 +1,5 @@
 from model.owner import Owner
-from model.response import Response
+from model.response import PatchResponse, Response
 from queries.baseQueries import BaseQueries
 
 
@@ -37,7 +37,7 @@ class AdminQueries(BaseQueries):
             id= id
         )
     
-    def patchOwner(self, cachePrefix: str, id: int, data: Owner):
+    def patchOwner(self, cachePrefix: str, id: int, data: Owner) -> PatchResponse[Owner]:
         return self._add_or_patch(
             isPatch= True,
             model= Owner,
@@ -48,6 +48,17 @@ class AdminQueries(BaseQueries):
             id= id
         )
     
+    def insertOwner(self, cachePrefix: str, id: int, data: Owner) -> PatchResponse[Owner]:
+        return self._add_or_patch(
+            isPatch= False,
+            model= Owner,
+            cachePrefix= cachePrefix,
+            tableName= self.OWNER_TABLE_NAME,
+            data= data,
+            role= self.ROLE,
+            id= id
+        )
+
     def deleteOwner(self, cachePrefix: str, id: int):
         return self._delete(
             model= Owner,
