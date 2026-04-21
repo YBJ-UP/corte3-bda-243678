@@ -32,7 +32,45 @@ class BaseQueries:
         self.__redis_client.delete(cache_key)
         return None
     
-    def wipeAllCache(self, role: Literal["Administrador", "Recepcionista", "Veterinario"]):
+    def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
+        return (tuple(data.keys()), tuple(data.values()))
+    
+    def __prepare_clauses(self, keys: tuple[str,...]) -> list[str]:
+        clauses: list[str] = []
+        for key in keys:
+            clauses.append(f"{key}= %s")
+        return clauses
+
+    def __prepare_query[T](self, model: type[T], isPatch: bool, data: T, id: int, tableName: str) -> tuple[str, tuple[str,...]]:
+        keys, values = self.__convert_to_tuples(model= model, data= data)
+
+        clauses: list[str] = self.__prepare_clauses(keys)
+        
+        valuesList: list[str] = list(values)
+        preparedQuery: str = ''
+        if isPatch:
+            preparedQuery: str = f"UPDATE {tableName} SET {", ".join(clauses)} WHERE ID = %s RETURNING *;"
+            valuesList.append(str(id))
+        else:
+            preparedQuery: str = ""
+        
+
+        return preparedQuery, tuple(valuesList)
+    
+    def _add_or_patch[T](self, model: type[T], isPatch: bool, cachePrefix: str, tableName: str, data: T, role: Literal['Administrador', 'Recepcionista', 'Veterinario'], id: int):
+        query, values = self.__prepare_query(model= model, isPatch= True, data= data, id= id, tableName= tableName)
+        return self.__patch_insert(
+            model= model,
+            isPatch= isPatch,
+            cachePrefix= cachePrefix,
+            tableName= tableName,
+            query= query,
+            params= values,
+            role= role,
+            id= id
+        )
+
+    def _wipeAllCache(self, role: Literal["Administrador", "Recepcionista", "Veterinario"]):
         if role == "Administrador":
             self.__redis_client.flushdb()
             print("[FLUSH] caché vaciado", flush= True)
@@ -40,7 +78,7 @@ class BaseQueries:
         else:
             raise HTTPException(403, { "message":"Sin permisos necesarios para vacíar caché." })
 
-    def get[T](
+    def _get[T](
             self,
             model: type[T],
             type: Literal["one","all"],
@@ -83,7 +121,7 @@ class BaseQueries:
             "data": row
         }
     
-    def patch_insert[T](
+    def __patch_insert[T](
             self,
             isPatch: bool,
             model: type[T],
@@ -117,7 +155,7 @@ class BaseQueries:
             "updated_data": result
         }
     
-    def delete[T](
+    def _delete[T](
             self,
             model: type[T],
             cachePrefix: str,
