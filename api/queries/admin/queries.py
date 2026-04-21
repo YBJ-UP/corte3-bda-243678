@@ -1,5 +1,3 @@
-from typing import Literal
-
 from model.owner import Owner
 from model.response import Response
 from queries.baseQueries import BaseQueries
@@ -12,18 +10,50 @@ class AdminQueries(BaseQueries):
     INSERT_OWNER_QUERY = "INSERT INTO duenos (nombre, telefono, email) VALUES %s, %s, %s"
     ROLE = "Administrador"
 
-    OWNER_TABLE_NAME = "dueños"
+    OWNER_TABLE_NAME = "duenos"
+    OWNER_TABLE_DESCRIPTION = "dueños"
 
     def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
         return (tuple(data.keys()), tuple(data.values()))
     
-    def __patchOwner(self, cachPrefix: bool)
+    def __prepare_clauses(self, keys: tuple[str,...]) -> list[str]:
+        clauses: list[str] = []
+        for key in keys:
+            clauses.append(f"{key}= %s")
+        return clauses
+
+    def __prepare_query[T](self, model: type[T], isPatch: bool, data: T, id: int, tableName: str) -> tuple[str, tuple[str,...]]:
+        keys, values = self.__convert_to_tuples(model= model, data= data)
+
+        clauses: list[str] = self.__prepare_clauses(keys)
+        
+        preparedQuery: str = ''
+        if isPatch:
+            preparedQuery: str = f"UPDATE {tableName} SET {", ".join(clauses)} WHERE ID = %s RETURNING *;"
+        else:
+            preparedQuery: str = ""
+        
+        valuesList: list[str] = list(values)
+        valuesList.append(str(id))
+
+        return preparedQuery, tuple(valuesList)
     
-    def __add_or_patch(self, isPatch: bool, cachePrefix: str, id: int, query: str):
+    def __add_or_patch(self, isPatch: bool, cachePrefix: str, query: str, values: tuple[str,...], id: int):
         if isPatch:
                 return self.patch_insert(
                 model= Owner,
                 isPatch= True,
+                cachePrefix= cachePrefix,
+                tableName= self.OWNER_TABLE_NAME,
+                query= query,
+                params= values,
+                role= self.ROLE,
+                id= id
+            )
+        else:
+            return self.patch_insert(
+                model= Owner,
+                isPatch= False,
                 cachePrefix= cachePrefix,
                 tableName= self.OWNER_TABLE_NAME,
                 query= query,
@@ -40,7 +70,7 @@ class AdminQueries(BaseQueries):
             type='all',
             model= list[Owner],
             cachePrefix=cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
+            tableName= self.OWNER_TABLE_DESCRIPTION,
             query= self.ALL_OWNERS_QUERY,
             role= self.ROLE
         )
@@ -57,12 +87,12 @@ class AdminQueries(BaseQueries):
         )
     
     def patchOwner(self, cachePrefix: str, id: int, data: Owner):
-        keys, values = self.__convert_to_tuples( model=Owner, data=data)
-        query = "algo"
+        query, values = self.__prepare_query(model= Owner, isPatch= True, data= data, id= id, tableName= self.OWNER_TABLE_NAME)
         return self.__add_or_patch(
             isPatch= True,
             cachePrefix= cachePrefix,
             query= query,
+            values= values,
             id= id
         )
     
