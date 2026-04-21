@@ -44,3 +44,13 @@ class AdminQueries(BaseQueries):
             role= self.ROLE,
             id= id
         )
+    
+    def deleteOwner(self, cachePrefix: str, id: int):
+        return self.delete(
+            model= Owner,
+            cachePrefix= cachePrefix,
+            tableName= self.OWNER_TABLE_NAME,
+            query= self.DELETE_OWNER_QUERY,
+            role= self.ROLE,
+            id= id
+        )
