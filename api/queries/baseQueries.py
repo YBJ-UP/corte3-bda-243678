@@ -85,7 +85,7 @@ class BaseQueries:
             type: Literal["one","all"],
             cachePrefix: str,
             query: str,
-            tableName: str,
+            tableAlias: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
             id: int | None = None
         ) -> Response[T]:
@@ -111,7 +111,7 @@ class BaseQueries:
                 assert id is not None
                 row: T = conn.execute(query, (id,)).fetchone()
                 if row is None:
-                    raise HTTPException(status_code=404, detail=f"No se encontró el {tableName} buscado")
+                    raise HTTPException(status_code=404, detail=f"No se encontró el {tableAlias} buscado")
 
         self.__add_to_cache(cache_key=cache_key, data=row)
 

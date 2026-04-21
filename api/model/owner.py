@@ -3,7 +3,7 @@ from typing import Annotated
 from pydantic import BaseModel, StringConstraints
 
 
-class Owner(BaseModel):
+class OwnerBaseModel(BaseModel):
     id: int
     nombre: Annotated[str, StringConstraints(max_length=100)]
     telefono: Annotated[str, StringConstraints(max_length=20)] | None = None

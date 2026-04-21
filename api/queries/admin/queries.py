@@ -1,68 +1,61 @@
-from model.owner import Owner
+from model.owner import OwnerBaseModel
 from model.response import DeleteResponse, PatchResponse, Response
 from queries.baseQueries import BaseQueries
 
-
 class AdminQueries(BaseQueries):
-    ALL_OWNERS_QUERY = "SELECT * FROM duenos;"
-    SELECT_OWNER_QUERY = "SELECT * FROM duenos WHERE id=%s;"
-    DELETE_OWNER_QUERY = "DELETE FROM duenos WHERE id=%s"
     ROLE = "Administrador"
-
-    OWNER_TABLE_NAME = "duenos"
-    OWNER_TABLE_ALIAS = "dueños"
 
     def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
         return self._wipeAllCache(self.ROLE)
 
-    def getAllOwners(self, cachePrefix: str) -> Response[list[Owner]]:
+    def getAll(self, cachePrefix: str, tableAlias: str, query: str) -> Response[list[OwnerBaseModel]]:
         return self._get(
             type='all',
-            model= list[Owner],
+            model= list[OwnerBaseModel],
             cachePrefix=cachePrefix,
-            tableName= self.OWNER_TABLE_ALIAS,
-            query= self.ALL_OWNERS_QUERY,
+            tableAlias= tableAlias,
+            query= query,
             role= self.ROLE
         )
 
-    def getOwner(self, cachePrefix: str, id: int) -> Response[Owner]:
+    def getOne(self, cachePrefix: str, id: int, tableAlias: str, query: str) -> Response[OwnerBaseModel]:
         return self._get(
             type="one",
-            model= Owner,
+            model= OwnerBaseModel,
             cachePrefix= cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
-            query= self.SELECT_OWNER_QUERY,
+            tableAlias= tableAlias,
+            query= query,
             role= self.ROLE,
             id= id
         )
     
-    def patchOwner(self, cachePrefix: str, id: int, data: Owner) -> PatchResponse[Owner]:
+    def patch(self, cachePrefix: str, id: int, data: OwnerBaseModel, tableName: str) -> PatchResponse[OwnerBaseModel]:
         return self._add_or_patch(
             isPatch= True,
-            model= Owner,
+            model= OwnerBaseModel,
             cachePrefix= cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
+            tableName= tableName,
             data= data,
             role=self.ROLE,
             id= id
         )
     
-    def insertOwner(self, cachePrefix: str, data: Owner) -> PatchResponse[Owner]:
+    def insert(self, cachePrefix: str, data: OwnerBaseModel, tableName: str) -> PatchResponse[OwnerBaseModel]:
         return self._add_or_patch(
             isPatch= False,
-            model= Owner,
+            model= OwnerBaseModel,
             cachePrefix= cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
+            tableName= tableName,
             data= data,
             role= self.ROLE
         )
 
-    def deleteOwner(self, cachePrefix: str, id: int) -> DeleteResponse:
+    def delete(self, cachePrefix: str, id: int, tableName: str, query: str) -> DeleteResponse:
         return self._delete(
-            model= Owner,
+            model= OwnerBaseModel,
             cachePrefix= cachePrefix,
-            tableName= self.OWNER_TABLE_NAME,
-            query= self.DELETE_OWNER_QUERY,
+            tableName= tableName,
+            query= query,
             role= self.ROLE,
             id= id
         )
