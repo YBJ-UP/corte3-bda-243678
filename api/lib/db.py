@@ -7,7 +7,7 @@ from psycopg_pool import ConnectionPool
 from redis import Redis, ConnectionPool as RedisPool
 
 load_dotenv()
-_db_url: str = getenv("POSTGRES_URL", "postgres://app:12345678@postgres:5432/postgres")
+_db_url: str = getenv("POSTGRES_URL", "postgres://app:12345678@localhost:5433/postgres")
 
 pg_pool: ConnectionPool = ConnectionPool(
     conninfo= _db_url,
@@ -16,7 +16,7 @@ pg_pool: ConnectionPool = ConnectionPool(
     kwargs={"row_factory": dict_row}
 )
 
-_redis_url: str = getenv("REDIS_URL", "redis://redis:6739/0")
+_redis_url: str = getenv("REDIS_URL", "redis://localhost:6739/0")
 
 # Formato: redis://host:port/db
 _redis_parts = _redis_url.replace("redis://", "").split("/")

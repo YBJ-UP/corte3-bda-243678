@@ -53,13 +53,13 @@ class BaseQueries:
             preparedQuery: str = f"UPDATE {tableName} SET {", ".join(clauses)} WHERE ID = %s RETURNING *;"
             valuesList.append(str(id))
         else:
-            preparedQuery: str = f"INSERT INTO {tableName} ({", ".join(keys)}) VALUES {", ".join(["%s"] * len(keys))}; RETURNING *"
+            preparedQuery: str = f"INSERT INTO {tableName} ({", ".join(keys)}) VALUES ({", ".join(["%s"] * len(keys))}) RETURNING *;"
         
 
         return preparedQuery, tuple(valuesList)
     
     def _add_or_patch[T](self, model: type[T], isPatch: bool, cachePrefix: str, tableName: str, data: T, role: Literal['Administrador', 'Recepcionista', 'Veterinario'], id: int | None = None) -> PatchResponse[T]:
-        query, values = self.__prepare_query(model= model, isPatch= True, data= data, id= id, tableName= tableName)
+        query, values = self.__prepare_query(model= model, isPatch= isPatch, data= data, id= id, tableName= tableName)
         return self.__patch_insert(
             model= model,
             isPatch= isPatch,

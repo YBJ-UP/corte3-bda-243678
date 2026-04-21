@@ -18,6 +18,7 @@ DROP ROLE IF EXISTS app; --la app en sí no hace nadota, los roles se cambian en
 
 CREATE ROLE Administrador;
 GRANT ALL PRIVILEGES ON TABLE duenos TO Administrador;
+GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO Administrador;
 CREATE ROLE Recepcionista;
 CREATE ROLE Veterinario;
 
