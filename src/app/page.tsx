@@ -1,4 +1,4 @@
-import SessionCard from "./components/session_card";
+import SessionCard from "@/components/session_card";
 
 export default function Home() {
   return (
