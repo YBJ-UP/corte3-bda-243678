@@ -1,19 +1,22 @@
 from os import getenv
 from dotenv import load_dotenv
-from fastapi import HTTPException, Header
+
+from fastapi import Depends, HTTPException
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+
 import jwt
 
 from queries.userQueries import UserQueries
-
 from lib.roles import Admin, Veterinario, Rec
 
 load_dotenv()
 __SECRET: str = getenv("JWT_SECRET", "hola")
 
-def get_user(auth: str = Header(...)) -> UserQueries:
+bearer = HTTPBearer()
+
+def get_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)) -> UserQueries:
     try:
-        token: str = auth.removeprefix("Bearer")
-        payload = jwt.decode(token, __SECRET, algorithms=["HS256"])
+        payload = jwt.decode(credentials.credentials, __SECRET, algorithms=["HS256"])
         role = payload.get("role")
 
         match role:
