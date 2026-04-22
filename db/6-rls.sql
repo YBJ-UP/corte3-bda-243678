@@ -12,7 +12,7 @@ CREATE POLICY citas_admin_recep ON citas
 -- Los veterinarios solo ven las citas de ellos 
 CREATE POLICY citas_vet ON citas
     FOR ALL TO Veterinario 
-    USING (veterinario_id = current_setting('app.current_vet_id')::int);
+    USING (veterinario_id = current_setting('app.current_id')::int);
 
 -- ==========================================
 -- MASCOTAS
@@ -27,7 +27,7 @@ CREATE POLICY mascotas_vet ON mascotas
         id IN (
             SELECT mascota_id 
             FROM vet_atiende_mascota 
-            WHERE vet_id = current_setting('app.current_vet_id')::int
+            WHERE vet_id = current_setting('app.current_id')::int
         )
     );
 
@@ -44,6 +44,6 @@ CREATE POLICY vacunas_vet ON vacunas_aplicadas
         mascota_id IN (
             SELECT mascota_id 
             FROM vet_atiende_mascota 
-            WHERE vet_id = current_setting('app.current_vet_id')::int
+            WHERE vet_id = current_setting('app.current_id')::int
         )
     );

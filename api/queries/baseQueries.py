@@ -3,33 +3,45 @@ import time
 from typing import Any, Literal
 
 from fastapi import HTTPException
+from psycopg import Connection
 from psycopg_pool import ConnectionPool
 from redis import Redis
 
 from model.response import DeleteResponse, PatchResponse, Response
 
 class BaseQueries:
-    __pg_pool: ConnectionPool
-    __redis_client: Redis
+    _pg_pool: ConnectionPool
+    _redis_client: Redis
     def __init__(self, pg_pool: ConnectionPool, redis_client: Redis) -> None:
-        self.__pg_pool = pg_pool
-        self.__redis_client = redis_client
+        self._pg_pool = pg_pool
+        self._redis_client = redis_client
 
     CACHE_TTL = 300
 
+    def __prepare_conn(self, conn: Connection, role: Literal["Administrador", "Recepcionista", "Veterinario"], current_user_id: int | None = None) -> None:
+        VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
+        assert role in VALID_ROLES, f"Rol inválido: {role}"
+        conn.execute(f"SET LOCAL ROLE {role};") # me sale todo en rojo pero funciona xd
+
+        if role == "Veterinario":
+            assert current_user_id is not None, "Id inválido"
+            conn.execute("SET LOCAL app.current_id = %s;", (current_user_id,))
+        
+        return
+
     def __get_from_cache(self, cache_key: str):
-        cached = self.__redis_client.get(cache_key)
+        cached = self._redis_client.get(cache_key)
         if cached:
             return json.loads(cached)
         return None
     
     def __add_to_cache(self, cache_key: str, data: Any) -> None:
         stringified_data = json.dumps(data, default=str)
-        self.__redis_client.setex(cache_key, self.CACHE_TTL, stringified_data)
+        self._redis_client.setex(cache_key, self.CACHE_TTL, stringified_data)
         return None
     
     def __wipe_cache(self, cache_key: str) -> None:
-        self.__redis_client.delete(cache_key)
+        self._redis_client.delete(cache_key)
         return None
     
     def __convert_to_tuples[T](self, model: type[T], data: T) -> tuple[tuple[str, ...], tuple[str, ...]]:
@@ -58,7 +70,16 @@ class BaseQueries:
 
         return preparedQuery, tuple(valuesList)
     
-    def _add_or_patch[T](self, model: type[T], isPatch: bool, cachePrefix: str, tableName: str, data: T, role: Literal['Administrador', 'Recepcionista', 'Veterinario'], id: int | None = None) -> PatchResponse[T]:
+    def _add_or_patch[T](
+            self, model: type[T],
+            isPatch: bool,
+            cachePrefix: str,
+            tableName: str,
+            data: T,
+            role: Literal['Administrador', 'Recepcionista', 'Veterinario'],
+            id: int | None = None,
+            current_user_id: int | None = None
+        ) -> PatchResponse[T]:
         query, values = self.__prepare_query(model= model, isPatch= isPatch, data= data, id= id, tableName= tableName)
         return self.__patch_insert(
             model= model,
@@ -68,14 +89,15 @@ class BaseQueries:
             query= query,
             params= values,
             role= role,
-            id= id
+            id= id,
+            current_user_id= current_user_id
         )
 
     def _wipeAllCache(self, role: Literal["Administrador", "Recepcionista", "Veterinario"]):
         if role == "Administrador":
-            self.__redis_client.flushdb()
+            self._redis_client.flushdb()
             print("[FLUSH] caché vaciado", flush= True)
-            return { "message":"Caché vaciado", "keys_remaining": self.__redis_client.dbsize() }
+            return { "message":"Caché vaciado", "keys_remaining": self._redis_client.dbsize() }
         else:
             raise HTTPException(403, { "message":"Sin permisos necesarios para vacíar caché." })
 
@@ -87,10 +109,11 @@ class BaseQueries:
             query: str,
             tableAlias: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
-            id: int | None = None
+            id: int | None = None,
+            current_user_id: int | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{role}:{cachePrefix}:{id}" if id is not None else cachePrefix
+        cache_key: str = f"{role}:{cachePrefix}:{id}" if id is not None else f"{role}:{cachePrefix}"
 
         cached = self.__get_from_cache(cache_key)
         if cached is not None:
@@ -103,10 +126,8 @@ class BaseQueries:
             }
 
         row:T
-        with self.__pg_pool.connection() as conn:
-            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
-            assert role in VALID_ROLES, f"Rol inválido: {role}"
-            conn.execute(f"SET LOCAL ROLE {role};") # me sale todo en rojo pero funciona xd
+        with self._pg_pool.connection() as conn:
+            self.__prepare_conn(conn, role, current_user_id)
             if type == "all":
                 row: T = conn.execute(query).fetchall()
             else:
@@ -133,15 +154,14 @@ class BaseQueries:
             query: str,
             params: tuple[str, ...],
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
-            id: int | None = None
+            id: int | None = None,
+            current_user_id: int | None = None
     ) -> PatchResponse[T]:
         t0: float = time.perf_counter()
 
         result: T
-        with self.__pg_pool.connection() as conn:
-            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
-            assert role in VALID_ROLES, f"Rol inválido: {role}"
-            conn.execute(f"SET LOCAL ROLE {role};")
+        with self._pg_pool.connection() as conn:
+            self.__prepare_conn(conn, role, current_user_id)
             result: T = conn.execute(query, params).fetchone()
             conn.commit()
 
@@ -153,7 +173,7 @@ class BaseQueries:
             cache_key: str = f"{role}:{cachePrefix}:{id}"
             self.__wipe_cache(cache_key)
         else:
-            self.__wipe_cache(cachePrefix)
+            self.__wipe_cache(f"{role}:{cachePrefix}")
         
         elapsed: float = (time.perf_counter() - t0) * 1000
         return {
@@ -169,15 +189,14 @@ class BaseQueries:
             tableName: str,
             query: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
-            id: int
+            id: int,
+            current_user_id: int | None = None
     ) -> DeleteResponse:
         t0: float = time.perf_counter()
 
         result: Any
-        with self.__pg_pool.connection() as conn:
-            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
-            assert role in VALID_ROLES, f"Rol inválido: {role}"
-            conn.execute(f"SET LOCAL ROLE {role};")
+        with self._pg_pool.connection() as conn:
+            self.__prepare_conn(conn, role, current_user_id)
             result: Any = conn.execute(query, (id,)).fetchone()
             conn.commit()
 
