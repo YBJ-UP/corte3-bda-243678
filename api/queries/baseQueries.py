@@ -104,6 +104,8 @@ class BaseQueries:
 
         row:T
         with self.__pg_pool.connection() as conn:
+            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
+            assert role in VALID_ROLES, f"Rol inválido: {role}"
             conn.execute(f"SET LOCAL ROLE {role};") # me sale todo en rojo pero funciona xd
             if type == "all":
                 row: T = conn.execute(query).fetchall()
@@ -137,6 +139,8 @@ class BaseQueries:
 
         result: T
         with self.__pg_pool.connection() as conn:
+            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
+            assert role in VALID_ROLES, f"Rol inválido: {role}"
             conn.execute(f"SET LOCAL ROLE {role};")
             result: T = conn.execute(query, params).fetchone()
             conn.commit()
@@ -171,6 +175,8 @@ class BaseQueries:
 
         result: Any
         with self.__pg_pool.connection() as conn:
+            VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
+            assert role in VALID_ROLES, f"Rol inválido: {role}"
             conn.execute(f"SET LOCAL ROLE {role};")
             result: Any = conn.execute(query, (id,)).fetchone()
             conn.commit()
