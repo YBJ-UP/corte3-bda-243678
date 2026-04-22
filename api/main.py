@@ -22,7 +22,7 @@ AdminOwnerRoutes: APIRouter = create_routes(
     tableAlias= TABLES["OWNER"].ALIAS,
     tableName= TABLES["OWNER"].NAME,
     cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-    path="/admin/duenno",
+    path="/admin/owners",
     read= Owner,
     add= OwnerPost,
     patch= OwnerPatch,
@@ -66,54 +66,6 @@ def cacheInfo():
         "evicted_keys": info.get("evicted_keys", 0),
         "total_keys": redis_client.dbsize(),
     }
-
-# RUTAS DE DUEÑO
-
-@app.get("/admin/owners")
-def get_owners() -> Response[list[Owner]]:
-    return Admin.getAll(
-        model=list[Owner],
-        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-        tableAlias= TABLES["OWNER"].ALIAS,
-        query=TABLES["OWNER"].SELECT_ALL_QUERY
-        )
-
-@app.get("/admin/owners/{id}")
-def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[Owner]:
-    return Admin.getOne(
-        model=Owner,
-        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-        id=id,
-        tableAlias= TABLES["OWNER"].ALIAS,
-        query= TABLES["OWNER"].SELECT_ONE_QUERY)
-
-@app.post('/admin/owners')
-def add_owner(data: OwnerPost) -> PatchResponse[OwnerPost]:
-    return Admin.insert(
-        model= OwnerPost,
-        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-        data= data,
-        tableName= TABLES["OWNER"].NAME
-        )
-
-@app.patch("/admin/owners/{id}")
-def patch_owner(id: int, data: OwnerPatch) -> PatchResponse[OwnerPatch]:
-    return Admin.patch(
-        model=OwnerPatch,
-        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-        id= id,
-        data= data,
-        tableName= TABLES["OWNER"].NAME
-        )
-
-@app.delete("/admin/owners/{id}")
-def delete_owner(id: int) -> DeleteResponse:
-    return Admin.delete(
-        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
-        id= id,
-        tableName= TABLES["OWNER"].NAME,
-        query= TABLES["OWNER"].DELETE_QUERY
-        )
 
 # RUTAS DE VETERINARIO
 
