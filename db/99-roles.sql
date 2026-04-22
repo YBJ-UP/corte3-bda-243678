@@ -17,9 +17,8 @@ DROP ROLE IF EXISTS Veterinario;
 DROP ROLE IF EXISTS app; --la app en sí no hace nadota, los roles se cambian en el backend
 
 CREATE ROLE Administrador;
-GRANT ALL PRIVILEGES ON TABLE duenos TO Administrador;
-GRANT ALL PRIVILEGES ON TABLE veterinarios TO Administrador;
-GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO Administrador;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO administrador;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO administrador;
 CREATE ROLE Recepcionista;
 CREATE ROLE Veterinario;
 
