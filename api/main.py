@@ -1,6 +1,6 @@
 from fastapi import APIRouter, FastAPI
 
-from lib.db import pg_pool, redis_client, check_connections
+from lib.db import redis_client, check_connections
 from lib.constants import TABLES
 
 from model.dates import Date, DatePatch, DatePost
@@ -8,17 +8,13 @@ from model.owner import Owner, OwnerPatch, OwnerPost
 from model.pet import Pet, PetPatch, PetPost
 from model.vaccine import Vaccine, VaccinePatch, VaccinePost
 from model.vet import Vet, VetPatch, VetPost
-from queries.userQueries import UserQueries
 from routes.genericRouter import create_routes
+
+from lib.roles import Admin, Veterinario, Rec
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
-Admin = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Administrador")
-Veterinario = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Veterinario")
-Rec = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Recepcionista")
-
 AdminOwnerRoutes: APIRouter = create_routes(
-    user= Admin,
     table= TABLES["OWNER"],
     path="/admin/owners",
     read= Owner,
@@ -26,7 +22,6 @@ AdminOwnerRoutes: APIRouter = create_routes(
     patch= OwnerPatch,
 )
 AdminVetRoutes: APIRouter = create_routes(
-    user= Admin,
     table= TABLES["VET"],
     path="/admin/vet",
     read= Vet,
@@ -34,7 +29,6 @@ AdminVetRoutes: APIRouter = create_routes(
     patch= VetPatch,
 )
 AdminPetRoutes: APIRouter = create_routes(
-    user= Admin,
     table= TABLES["PET"],
     path="/admin/pet",
     read= Pet,
@@ -42,7 +36,6 @@ AdminPetRoutes: APIRouter = create_routes(
     patch= PetPatch,
 )
 AdminDateRoutes: APIRouter = create_routes(
-    user= Admin,
     table= TABLES["DATE"],
     path="/admin/date",
     read= Date,
@@ -50,7 +43,6 @@ AdminDateRoutes: APIRouter = create_routes(
     patch= DatePatch
 )
 AdminVaccineRoutes: APIRouter = create_routes(
-    user= Admin,
     table= TABLES["VAXX"],
     path="/admin/vaccines",
     read= Vaccine,

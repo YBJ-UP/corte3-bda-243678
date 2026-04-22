@@ -171,7 +171,7 @@ class BaseQueries:
 
         result: Any
         with self.__pg_pool.connection() as conn:
-            conn.execute(f"SET LOCAL ROLE {role}:")
+            conn.execute(f"SET LOCAL ROLE {role};")
             result: Any = conn.execute(query, (id,)).fetchone()
             conn.commit()
 

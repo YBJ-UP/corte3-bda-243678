@@ -1,13 +1,13 @@
 from typing import Type
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
 
+from lib.auth import get_user
 from lib.constants import tabla
 from model.response import DeleteResponse, PatchResponse, Response
 from queries.userQueries import UserQueries
 
 def create_routes[T_read, T_add, T_patch](
-        user: UserQueries,
         table: tabla,
         path: str,
         read: Type[T_read],
@@ -17,7 +17,7 @@ def create_routes[T_read, T_add, T_patch](
     router = APIRouter(prefix= path)
 
     @router.get("", response_model=Response[list[read]])
-    def get_All() -> Response[list[T_read]]:
+    def get_All(user: UserQueries = Depends(get_user)) -> Response[list[T_read]]:
         return user.getAll(
             model= list[T_read],
             cachePrefix= table.CACHE_PREFIX,
@@ -26,7 +26,7 @@ def create_routes[T_read, T_add, T_patch](
         )
     
     @router.get("/{id}", response_model=Response[read])
-    def get_One(id: int) -> Response[T_read]:
+    def get_One(id: int, user: UserQueries = Depends(get_user)) -> Response[T_read]:
         return user.getOne(
             model= read,
             cachePrefix= table.CACHE_PREFIX,
@@ -36,7 +36,7 @@ def create_routes[T_read, T_add, T_patch](
         )
     
     @router.post("", response_model=Response[add])
-    def post(data: add) -> PatchResponse[T_add]:
+    def post(data: add, user: UserQueries = Depends(get_user)) -> PatchResponse[T_add]:
         return user.insert(
             model= add,
             cachePrefix= table.CACHE_PREFIX, 
@@ -45,7 +45,7 @@ def create_routes[T_read, T_add, T_patch](
         )
     
     @router.patch("/{id}", response_model=Response[patch])
-    def update(id: int, data: patch) -> PatchResponse[T_patch]:
+    def update(id: int, data: patch, user: UserQueries = Depends(get_user)) -> PatchResponse[T_patch]:
         return user.patch(
             model= patch,
             cachePrefix= table.CACHE_PREFIX,
@@ -55,7 +55,7 @@ def create_routes[T_read, T_add, T_patch](
         )
     
     @router.delete("/{id}", response_model=DeleteResponse)
-    def delete(id: int) -> DeleteResponse:
+    def delete(id: int, user: UserQueries = Depends(get_user)) -> DeleteResponse:
         return user.delete(
             cachePrefix= table.CACHE_PREFIX,
             id= id,
