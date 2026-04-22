@@ -1,12 +1,12 @@
-from typing import Annotated
-
-from fastapi import APIRouter, FastAPI, Path
+from fastapi import APIRouter, FastAPI
 
 from lib.db import pg_pool, redis_client, check_connections
 from lib.constants import TABLES
 
+from model.dates import Date, DatePatch, DatePost
 from model.owner import Owner, OwnerPatch, OwnerPost
-from model.response import DeleteResponse, PatchResponse, Response
+from model.pet import Pet, PetPatch, PetPost
+from model.vaccine import Vaccine, VaccinePatch, VaccinePost
 from model.vet import Vet, VetPatch, VetPost
 from queries.userQueries import UserQueries
 from routes.genericRouter import create_routes
@@ -31,7 +31,61 @@ AdminOwnerRoutes: APIRouter = create_routes(
     deleteQuery= TABLES["OWNER"].DELETE_QUERY
 )
 
-app.include_router(AdminOwnerRoutes)
+AdminVetRoutes: APIRouter = create_routes(
+    user= Admin,
+    tableAlias= TABLES["VET"].ALIAS,
+    tableName= TABLES["VET"].NAME,
+    cachePrefix= TABLES["VET"].CACHE_PREFIX,
+    path="/admin/vet",
+    read= Vet,
+    add= VetPost,
+    patch= VetPatch,
+    readAllQuery= TABLES["VET"].SELECT_ALL_QUERY,
+    readOneQuery= TABLES["VET"].SELECT_ONE_QUERY,
+    deleteQuery= TABLES["VET"].DELETE_QUERY
+)
+
+AdminPetRoutes: APIRouter = create_routes(
+    user= Admin,
+    tableAlias= TABLES["PET"].ALIAS,
+    tableName= TABLES["PET"].NAME,
+    cachePrefix= TABLES["PET"].CACHE_PREFIX,
+    path="/admin/pet",
+    read= Pet,
+    add= PetPost,
+    patch= PetPatch,
+    readAllQuery= TABLES["PET"].SELECT_ALL_QUERY,
+    readOneQuery= TABLES["PET"].SELECT_ONE_QUERY,
+    deleteQuery= TABLES["PET"].DELETE_QUERY
+)
+
+AdminDateRoutes: APIRouter = create_routes(
+    user= Admin,
+    tableAlias= TABLES["DATE"].ALIAS,
+    tableName= TABLES["DATE"].NAME,
+    cachePrefix= TABLES["DATE"].CACHE_PREFIX,
+    path="/admin/date",
+    read= Date,
+    add= DatePost,
+    patch= DatePatch,
+    readAllQuery= TABLES["DATE"].SELECT_ALL_QUERY,
+    readOneQuery= TABLES["DATE"].SELECT_ONE_QUERY,
+    deleteQuery= TABLES["DATE"].DELETE_QUERY
+)
+
+AdminVaccineRoutes: APIRouter = create_routes(
+    user= Admin,
+    tableAlias= TABLES["VAXX"].ALIAS,
+    tableName= TABLES["VAXX"].NAME,
+    cachePrefix= TABLES["VAXX"].CACHE_PREFIX,
+    path="/admin/vaccines",
+    read= Vaccine,
+    add= VaccinePost,
+    patch= VaccinePatch,
+    readAllQuery= TABLES["VAXX"].SELECT_ALL_QUERY,
+    readOneQuery= TABLES["VAXX"].SELECT_ONE_QUERY,
+    deleteQuery= TABLES["VAXX"].DELETE_QUERY
+)
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:
@@ -67,50 +121,10 @@ def cacheInfo():
         "total_keys": redis_client.dbsize(),
     }
 
-# RUTAS DE VETERINARIO
-
-@app.get("/admin/vets")
-def get_vets() -> Response[list[Vet]]:
-    return Admin.getAll(
-        model=list[Vet],
-        cachePrefix= TABLES["VET"].CACHE_PREFIX,
-        tableAlias= TABLES["VET"].ALIAS,
-        query=TABLES["VET"].SELECT_ALL_QUERY
-        )
-
-@app.get("/admin/vets/{id}")
-def get_vet_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[Vet]:
-    return Admin.getOne(
-        model=Vet,
-        cachePrefix= TABLES["VET"].CACHE_PREFIX,
-        id=id,
-        tableAlias= TABLES["VET"].ALIAS,
-        query= TABLES["VET"].SELECT_ONE_QUERY)
-
-@app.post('/admin/vets')
-def add_vet(data: VetPost) -> PatchResponse[VetPost]:
-    return Admin.insert(
-        model= VetPost,
-        cachePrefix= TABLES["VET"].CACHE_PREFIX,
-        data= data,
-        tableName= TABLES["VET"].NAME
-        )
-
-@app.patch("/admin/vets/{id}")
-def patch_vet(id: int, data: VetPatch) -> PatchResponse[VetPatch]:
-    return Admin.patch(
-        model=VetPatch,
-        cachePrefix= TABLES["VET"].CACHE_PREFIX,
-        id= id,
-        data= data,
-        tableName= TABLES["VET"].NAME
-        )
-
-@app.delete("/admin/vets/{id}")
-def delete_vet(id: int) -> DeleteResponse:
-    return Admin.delete(
-        cachePrefix= TABLES["VET"].CACHE_PREFIX,
-        id= id,
-        tableName= TABLES["VET"].NAME,
-        query= TABLES["VET"].DELETE_QUERY
-        )
+# Carga de endpoints
+# Endpoints Admin
+app.include_router(AdminOwnerRoutes)
+app.include_router(AdminVetRoutes)
+app.include_router(AdminPetRoutes)
+app.include_router(AdminDateRoutes)
+app.include_router(AdminVaccineRoutes)

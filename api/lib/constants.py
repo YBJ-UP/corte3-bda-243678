@@ -42,5 +42,13 @@ TABLES = {
         SELECT_ALL_QUERY="SELECT * FROM citas;",
         SELECT_ONE_QUERY="SELECT * FROM citas WHERE id=%s;",
         DELETE_QUERY="DELETE FROM citas WHERE id=%s;"
+    ),
+    "VAXX": tabla(
+        NAME="inventario_vacunas",
+        ALIAS="Vacunas",
+        CACHE_PREFIX="cache:vaxx",
+        SELECT_ALL_QUERY="SELECT * FROM inventario_vacunas;",
+        SELECT_ONE_QUERY="SELECT * FROM inventario_vacunas WHERE id=%s;",
+        DELETE_QUERY="DELETE FROM inventario_vacunas WHERE id=%s;"
     )
 }
