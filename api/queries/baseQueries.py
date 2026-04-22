@@ -90,7 +90,7 @@ class BaseQueries:
             id: int | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{cachePrefix}:{id}" if id is not None else cachePrefix
+        cache_key: str = f"{role}:{cachePrefix}:{id}" if id is not None else cachePrefix
 
         cached = self.__get_from_cache(cache_key)
         if cached is not None:
@@ -146,7 +146,7 @@ class BaseQueries:
         
         if isPatch:
             assert id is not None
-            cache_key: str = f"{cachePrefix}:{id}"
+            cache_key: str = f"{role}:{cachePrefix}:{id}"
             self.__wipe_cache(cache_key)
         else:
             self.__wipe_cache(cachePrefix)
@@ -178,7 +178,7 @@ class BaseQueries:
         if result is None:
             raise HTTPException(404, f"No se encontró el {tableName} buscado")
         
-        cache_key: str = f"{cachePrefix}:{id}"
+        cache_key: str = f"{role}:{cachePrefix}:{id}"
         self.__wipe_cache(cache_key)
         
         elapsed: float = (time.perf_counter() - t0) * 1000
