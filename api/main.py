@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Path
+from fastapi import APIRouter, FastAPI, Path
 
 from lib.db import pg_pool, redis_client, check_connections
 from lib.constants import TABLES
@@ -9,12 +9,29 @@ from model.owner import Owner, OwnerPatch, OwnerPost
 from model.response import DeleteResponse, PatchResponse, Response
 from model.vet import Vet, VetPatch, VetPost
 from queries.userQueries import UserQueries
+from routes.genericRouter import create_routes
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
 Admin = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Administrador")
 Veterinario = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Veterinario")
 Rec = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Recepcionista")
+
+AdminOwnerRoutes: APIRouter = create_routes(
+    user= Admin,
+    tableAlias= TABLES["OWNER"].ALIAS,
+    tableName= TABLES["OWNER"].NAME,
+    cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+    path="/admin/duenno",
+    read= Owner,
+    add= OwnerPost,
+    patch= OwnerPatch,
+    readAllQuery= TABLES["OWNER"].SELECT_ALL_QUERY,
+    readOneQuery= TABLES["OWNER"].SELECT_ONE_QUERY,
+    deleteQuery= TABLES["OWNER"].DELETE_QUERY
+)
+
+app.include_router(AdminOwnerRoutes)
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:
