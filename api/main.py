@@ -1,5 +1,6 @@
-from fastapi import APIRouter, FastAPI
+from fastapi import APIRouter, Depends, FastAPI
 
+from lib.auth import get_user
 from lib.db import redis_client, check_connections
 from lib.constants import TABLES
 
@@ -8,9 +9,8 @@ from model.owner import Owner, OwnerPatch, OwnerPost
 from model.pet import Pet, PetPatch, PetPost
 from model.vaccine import Vaccine, VaccinePatch, VaccinePost
 from model.vet import Vet, VetPatch, VetPost
+from queries.userQueries import UserQueries
 from routes.genericRouter import create_routes
-
-from lib.roles import Admin
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
@@ -51,7 +51,6 @@ VaccineRoutes: APIRouter = create_routes(
 )
 
 
-
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:
     check_connections()
@@ -62,8 +61,8 @@ def health():
     return { "success": True, "message": "Api en ejecución" }
 
 @app.post("/cache/flush")
-def flush():
-    return Admin.wipeAllCacheWrapper()
+def flush(user: UserQueries = Depends(get_user)):
+    return user.wipeAllCacheWrapper()
 
 @app.get("/cache/info")
 def cacheInfo():
