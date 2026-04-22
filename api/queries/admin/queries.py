@@ -1,7 +1,6 @@
 from psycopg_pool import ConnectionPool
 from redis import Redis
 
-from model.owner import OwnerBaseModel
 from model.response import DeleteResponse, PatchResponse, Response
 from queries.user import User
 
@@ -43,10 +42,10 @@ class AdminQueries(User):
             id= id
         )
     
-    def insert(self, cachePrefix: str, data: OwnerBaseModel, tableName: str) -> PatchResponse[OwnerBaseModel]:
+    def insert[T](self, model: type[T], cachePrefix: str, data: T, tableName: str) -> PatchResponse[T]:
         return self._add_or_patch(
             isPatch= False,
-            model= OwnerBaseModel,
+            model= model,
             cachePrefix= cachePrefix,
             tableName= tableName,
             data= data,

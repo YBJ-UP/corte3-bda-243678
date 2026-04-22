@@ -5,15 +5,14 @@ from fastapi import FastAPI, Path
 from lib.db import pg_pool, redis_client, check_connections
 from lib.constants import TABLES
 
-from model.owner import OwnerBaseModel
+from model.owner import Owner, OwnerPatch, OwnerPost
 from model.response import DeleteResponse, PatchResponse, Response
+from model.vet import Vet, VetPatch, VetPost
 from queries.admin.queries import AdminQueries
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
 Admin = AdminQueries(pg_pool= pg_pool, redis_client= redis_client)
-
-OWNER_CACHE_PREFIX = "cache:owner"
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:
@@ -49,36 +48,39 @@ def cacheInfo():
         "total_keys": redis_client.dbsize(),
     }
 
+# RUTAS DE DUEÑO
+
 @app.get("/admin/owners")
-def get_owners() -> Response[list[OwnerBaseModel]]:
+def get_owners() -> Response[list[Owner]]:
     return Admin.getAll(
-        model=list[OwnerBaseModel],
+        model=list[Owner],
         cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
         tableAlias= TABLES["OWNER"].ALIAS,
         query=TABLES["OWNER"].SELECT_ALL_QUERY
         )
 
 @app.get("/admin/owners/{id}")
-def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[OwnerBaseModel]:
+def get_owner_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[Owner]:
     return Admin.getOne(
-        model=OwnerBaseModel,
+        model=Owner,
         cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
         id=id,
         tableAlias= TABLES["OWNER"].ALIAS,
         query= TABLES["OWNER"].SELECT_ONE_QUERY)
 
 @app.post('/admin/owners')
-def add_owner(data: OwnerBaseModel) -> PatchResponse[OwnerBaseModel]:
+def add_owner(data: OwnerPost) -> PatchResponse[OwnerPost]:
     return Admin.insert(
+        model= OwnerPost,
         cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
         data= data,
         tableName= TABLES["OWNER"].NAME
         )
 
 @app.patch("/admin/owners/{id}")
-def patch_owner(id: int, data: OwnerBaseModel) -> PatchResponse[OwnerBaseModel]:
+def patch_owner(id: int, data: OwnerPatch) -> PatchResponse[OwnerPatch]:
     return Admin.patch(
-        model=OwnerBaseModel,
+        model=OwnerPatch,
         cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
         id= id,
         data= data,
@@ -92,4 +94,52 @@ def delete_owner(id: int) -> DeleteResponse:
         id= id,
         tableName= TABLES["OWNER"].NAME,
         query= TABLES["OWNER"].DELETE_QUERY
+        )
+
+# RUTAS DE VETERINARIO
+
+@app.get("/admin/vets")
+def get_vets() -> Response[list[Vet]]:
+    return Admin.getAll(
+        model=list[Vet],
+        cachePrefix= TABLES["VET"].CACHE_PREFIX,
+        tableAlias= TABLES["VET"].ALIAS,
+        query=TABLES["VET"].SELECT_ALL_QUERY
+        )
+
+@app.get("/admin/vets/{id}")
+def get_vet_by_id(id: Annotated[int, Path(gt=0, title="Id de usuario")]) -> Response[Vet]:
+    return Admin.getOne(
+        model=Vet,
+        cachePrefix= TABLES["VET"].CACHE_PREFIX,
+        id=id,
+        tableAlias= TABLES["VET"].ALIAS,
+        query= TABLES["VET"].SELECT_ONE_QUERY)
+
+@app.post('/admin/vets')
+def add_vet(data: VetPost) -> PatchResponse[VetPost]:
+    return Admin.insert(
+        model= VetPost,
+        cachePrefix= TABLES["VET"].CACHE_PREFIX,
+        data= data,
+        tableName= TABLES["VET"].NAME
+        )
+
+@app.patch("/admin/vets/{id}")
+def patch_vet(id: int, data: VetPatch) -> PatchResponse[VetPatch]:
+    return Admin.patch(
+        model=VetPatch,
+        cachePrefix= TABLES["VET"].CACHE_PREFIX,
+        id= id,
+        data= data,
+        tableName= TABLES["VET"].NAME
+        )
+
+@app.delete("/admin/vets/{id}")
+def delete_vet(id: int) -> DeleteResponse:
+    return Admin.delete(
+        cachePrefix= TABLES["VET"].CACHE_PREFIX,
+        id= id,
+        tableName= TABLES["VET"].NAME,
+        query= TABLES["VET"].DELETE_QUERY
         )
