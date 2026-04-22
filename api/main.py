@@ -19,72 +19,47 @@ Rec = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Recepcion
 
 AdminOwnerRoutes: APIRouter = create_routes(
     user= Admin,
-    tableAlias= TABLES["OWNER"].ALIAS,
-    tableName= TABLES["OWNER"].NAME,
-    cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+    table= TABLES["OWNER"],
     path="/admin/owners",
     read= Owner,
     add= OwnerPost,
     patch= OwnerPatch,
-    readAllQuery= TABLES["OWNER"].SELECT_ALL_QUERY,
-    readOneQuery= TABLES["OWNER"].SELECT_ONE_QUERY,
-    deleteQuery= TABLES["OWNER"].DELETE_QUERY
 )
 
 AdminVetRoutes: APIRouter = create_routes(
     user= Admin,
-    tableAlias= TABLES["VET"].ALIAS,
-    tableName= TABLES["VET"].NAME,
-    cachePrefix= TABLES["VET"].CACHE_PREFIX,
+    table= TABLES["VET"],
     path="/admin/vet",
     read= Vet,
     add= VetPost,
     patch= VetPatch,
-    readAllQuery= TABLES["VET"].SELECT_ALL_QUERY,
-    readOneQuery= TABLES["VET"].SELECT_ONE_QUERY,
-    deleteQuery= TABLES["VET"].DELETE_QUERY
 )
 
 AdminPetRoutes: APIRouter = create_routes(
     user= Admin,
-    tableAlias= TABLES["PET"].ALIAS,
-    tableName= TABLES["PET"].NAME,
-    cachePrefix= TABLES["PET"].CACHE_PREFIX,
+    table= TABLES["PET"],
     path="/admin/pet",
     read= Pet,
     add= PetPost,
     patch= PetPatch,
-    readAllQuery= TABLES["PET"].SELECT_ALL_QUERY,
-    readOneQuery= TABLES["PET"].SELECT_ONE_QUERY,
-    deleteQuery= TABLES["PET"].DELETE_QUERY
 )
 
 AdminDateRoutes: APIRouter = create_routes(
     user= Admin,
-    tableAlias= TABLES["DATE"].ALIAS,
-    tableName= TABLES["DATE"].NAME,
-    cachePrefix= TABLES["DATE"].CACHE_PREFIX,
+    table= TABLES["DATE"],
     path="/admin/date",
     read= Date,
     add= DatePost,
-    patch= DatePatch,
-    readAllQuery= TABLES["DATE"].SELECT_ALL_QUERY,
-    readOneQuery= TABLES["DATE"].SELECT_ONE_QUERY,
-    deleteQuery= TABLES["DATE"].DELETE_QUERY
+    patch= DatePatch
 )
 
 AdminVaccineRoutes: APIRouter = create_routes(
     user= Admin,
-    tableAlias= TABLES["VAXX"].ALIAS,
-    tableName= TABLES["VAXX"].NAME,
-    cachePrefix= TABLES["VAXX"].CACHE_PREFIX,
+    table= TABLES["VAXX"],
     path="/admin/vaccines",
     read= Vaccine,
     add= VaccinePost,
     patch= VaccinePatch,
-    readAllQuery= TABLES["VAXX"].SELECT_ALL_QUERY,
-    readOneQuery= TABLES["VAXX"].SELECT_ONE_QUERY,
-    deleteQuery= TABLES["VAXX"].DELETE_QUERY
 )
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
