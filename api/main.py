@@ -8,11 +8,13 @@ from lib.constants import TABLES
 from model.owner import Owner, OwnerPatch, OwnerPost
 from model.response import DeleteResponse, PatchResponse, Response
 from model.vet import Vet, VetPatch, VetPost
-from queries.admin.queries import AdminQueries
+from queries.userQueries import UserQueries
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
-Admin = AdminQueries(pg_pool= pg_pool, redis_client= redis_client)
+Admin = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Administrador")
+Veterinario = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Veterinario")
+Rec = UserQueries(pg_pool= pg_pool, redis_client= redis_client, role= "Recepcionista")
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:

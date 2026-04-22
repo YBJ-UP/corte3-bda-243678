@@ -1,14 +1,16 @@
+from typing import Literal
+
 from psycopg_pool import ConnectionPool
 from redis import Redis
 
 from model.response import DeleteResponse, PatchResponse, Response
 from queries.user import User
 
-class AdminQueries(User):
-    ROLE = "Administrador"
+class UserQueries(User):
 
-    def __init__(self, pg_pool: ConnectionPool, redis_client: Redis) -> None:
+    def __init__(self, pg_pool: ConnectionPool, redis_client: Redis, role: Literal['Administrador', 'Veterinario', 'Recepcionista']) -> None:
         super().__init__(pg_pool= pg_pool, redis_client= redis_client)
+        self.ROLE: Literal['Administrador'] | Literal['Veterinario'] | Literal['Recepcionista'] = role
 
     def wipeAllCacheWrapper(self): # a canijo le di enter y me lo autocompletó
         return self._wipeAllCacheWrapper(self.ROLE)
