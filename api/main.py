@@ -25,7 +25,6 @@ AdminOwnerRoutes: APIRouter = create_routes(
     add= OwnerPost,
     patch= OwnerPatch,
 )
-
 AdminVetRoutes: APIRouter = create_routes(
     user= Admin,
     table= TABLES["VET"],
@@ -34,7 +33,6 @@ AdminVetRoutes: APIRouter = create_routes(
     add= VetPost,
     patch= VetPatch,
 )
-
 AdminPetRoutes: APIRouter = create_routes(
     user= Admin,
     table= TABLES["PET"],
@@ -43,7 +41,6 @@ AdminPetRoutes: APIRouter = create_routes(
     add= PetPost,
     patch= PetPatch,
 )
-
 AdminDateRoutes: APIRouter = create_routes(
     user= Admin,
     table= TABLES["DATE"],
@@ -52,7 +49,6 @@ AdminDateRoutes: APIRouter = create_routes(
     add= DatePost,
     patch= DatePatch
 )
-
 AdminVaccineRoutes: APIRouter = create_routes(
     user= Admin,
     table= TABLES["VAXX"],
@@ -61,6 +57,8 @@ AdminVaccineRoutes: APIRouter = create_routes(
     add= VaccinePost,
     patch= VaccinePatch,
 )
+
+
 
 @app.on_event("startup") # pyright: ignore[reportDeprecated]
 def startup() -> None:

@@ -104,7 +104,7 @@ class BaseQueries:
 
         row:T
         with self.__pg_pool.connection() as conn:
-            conn.execute(f"SET LOCAL ROLE {role}") # me sale todo en rojo pero funciona xd
+            conn.execute(f"SET LOCAL ROLE {role};") # me sale todo en rojo pero funciona xd
             if type == "all":
                 row: T = conn.execute(query).fetchall()
             else:
@@ -137,7 +137,7 @@ class BaseQueries:
 
         result: T
         with self.__pg_pool.connection() as conn:
-            conn.execute(f"SET LOCAL ROLE {role}")
+            conn.execute(f"SET LOCAL ROLE {role};")
             result: T = conn.execute(query, params).fetchone()
             conn.commit()
 
@@ -171,7 +171,7 @@ class BaseQueries:
 
         result: Any
         with self.__pg_pool.connection() as conn:
-            conn.execute(f"SET LOCAL ROLE {role}")
+            conn.execute(f"SET LOCAL ROLE {role}:")
             result: Any = conn.execute(query, (id,)).fetchone()
             conn.commit()
 
