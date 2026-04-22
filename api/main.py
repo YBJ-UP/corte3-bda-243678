@@ -10,41 +10,41 @@ from model.vaccine import Vaccine, VaccinePatch, VaccinePost
 from model.vet import Vet, VetPatch, VetPost
 from routes.genericRouter import create_routes
 
-from lib.roles import Admin, Veterinario, Rec
+from lib.roles import Admin
 
 app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
-AdminOwnerRoutes: APIRouter = create_routes(
+OwnerRoutes: APIRouter = create_routes(
     table= TABLES["OWNER"],
-    path="/admin/owners",
+    path="/owners",
     read= Owner,
     add= OwnerPost,
     patch= OwnerPatch,
 )
-AdminVetRoutes: APIRouter = create_routes(
+VetRoutes: APIRouter = create_routes(
     table= TABLES["VET"],
-    path="/admin/vet",
+    path="/vet",
     read= Vet,
     add= VetPost,
     patch= VetPatch,
 )
-AdminPetRoutes: APIRouter = create_routes(
+PetRoutes: APIRouter = create_routes(
     table= TABLES["PET"],
-    path="/admin/pet",
+    path="/pet",
     read= Pet,
     add= PetPost,
     patch= PetPatch,
 )
-AdminDateRoutes: APIRouter = create_routes(
+DateRoutes: APIRouter = create_routes(
     table= TABLES["DATE"],
-    path="/admin/date",
+    path="/date",
     read= Date,
     add= DatePost,
     patch= DatePatch
 )
-AdminVaccineRoutes: APIRouter = create_routes(
+VaccineRoutes: APIRouter = create_routes(
     table= TABLES["VAXX"],
-    path="/admin/vaccines",
+    path="/vaccines",
     read= Vaccine,
     add= VaccinePost,
     patch= VaccinePatch,
@@ -88,8 +88,8 @@ def cacheInfo():
 
 # Carga de endpoints
 # Endpoints Admin
-app.include_router(AdminOwnerRoutes)
-app.include_router(AdminVetRoutes)
-app.include_router(AdminPetRoutes)
-app.include_router(AdminDateRoutes)
-app.include_router(AdminVaccineRoutes)
+app.include_router(OwnerRoutes)
+app.include_router(VetRoutes)
+app.include_router(PetRoutes)
+app.include_router(DateRoutes)
+app.include_router(VaccineRoutes)
