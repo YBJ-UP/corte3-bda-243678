@@ -1,4 +1,4 @@
-CREATE OR REPLACE VIEW v_mascotas_vacunacion_pendiente AS
+CREATE OR REPLACE VIEW v_mascotas_vacunacion_pendiente WITH (security_invoker = true) AS
 WITH UltimaVacuna AS (
     SELECT 
         mascota_id, 
