@@ -20,7 +20,7 @@ def create_routes[T_read, T_add, T_patch](
 ) -> APIRouter:
     router = APIRouter(prefix= path)
 
-    @router.get("", response_model=Response[list[T_read]])
+    @router.get("", response_model=Response[list[read]])
     def get_All() -> Response[list[T_read]]:
         return user.getAll(
             model= list[T_read],
@@ -29,7 +29,7 @@ def create_routes[T_read, T_add, T_patch](
             query= readAllQuery
         )
     
-    @router.get("/{id}", response_model=Response[T_read])
+    @router.get("/{id}", response_model=Response[read])
     def get_One(id: int) -> Response[T_read]:
         return user.getOne(
             model= read,
@@ -39,8 +39,8 @@ def create_routes[T_read, T_add, T_patch](
             query= readOneQuery
         )
     
-    @router.post("", response_model=Response[T_add])
-    def post(data: T_add) -> PatchResponse[T_add]:
+    @router.post("", response_model=Response[add])
+    def post(data: add) -> PatchResponse[T_add]:
         return user.insert(
             model= add,
             cachePrefix= cachePrefix, 
@@ -49,7 +49,7 @@ def create_routes[T_read, T_add, T_patch](
         )
     
     @router.patch("/{id}", response_model=Response[patch])
-    def update(id: int, data: T_patch) -> PatchResponse[T_patch]:
+    def update(id: int, data: patch) -> PatchResponse[T_patch]:
         return user.patch(
             model= patch,
             cachePrefix= cachePrefix,
