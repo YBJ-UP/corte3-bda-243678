@@ -16,7 +16,7 @@ app = FastAPI(title="TuxMascotas - Python", version="0.1.0")
 
 OwnerRoutes: APIRouter = create_routes(
     table= TABLES["OWNER"],
-    path="/owners",
+    path="/owner",
     read= Owner,
     add= OwnerPost,
     patch= OwnerPatch,
@@ -44,7 +44,7 @@ DateRoutes: APIRouter = create_routes(
 )
 VaccineRoutes: APIRouter = create_routes(
     table= TABLES["VAXX"],
-    path="/vaccines",
+    path="/vaccine",
     read= Vaccine,
     add= VaccinePost,
     patch= VaccinePatch,
