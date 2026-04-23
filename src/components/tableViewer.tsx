@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 interface objectViewProps<T extends object> {
     object: T
     name: string
+    alias: string
 }
 
 export default function ObjectViewer<T extends object>(props: objectViewProps<T>) {
@@ -17,6 +18,7 @@ export default function ObjectViewer<T extends object>(props: objectViewProps<T>
 
     return (
         <div>
+            <h1>{props.alias}</h1>
             <div className="flex gap-5">
                 {llaves.map((key) => (
                     <p key={key}>{key.toUpperCase()}</p>

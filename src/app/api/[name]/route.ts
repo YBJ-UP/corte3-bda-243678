@@ -1,10 +1,16 @@
+import { Owner } from "@/interfaces/requests/ownerRequest";
+import { Vet } from "@/interfaces/requests/vetRequest";
 import { get } from "@/lib/apiClient";
 import { NextRequest, NextResponse } from "next/server";
 
 function getType(name: string) {
     switch (name){
-        case "": return
-        default: return
+        case "owner": return { nombre: "" } as Owner
+        case "vet": return { nombre: "" } as Vet
+        case "pet": return { nombre: "" } as Owner
+        case "date": return { nombre: "" } as Owner
+        case "vaccine": return { nombre: "" } as Owner
+        default: return null
     }
 }
 
