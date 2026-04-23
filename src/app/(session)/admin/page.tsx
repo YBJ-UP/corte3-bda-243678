@@ -7,7 +7,7 @@ export default function Admin() {
     return (
         <div>
             <p>intento</p>
-            <ObjectViewer<Owner> object={emptyOwner} />
+            <ObjectViewer<Owner> object={emptyOwner} name="owner" />
         </div>
     )
 }
