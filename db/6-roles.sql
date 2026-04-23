@@ -11,23 +11,24 @@
 -- Administrador
 -- Ve todo. Puede crear usuarios, asignar mascotas a veterinarios, y gestionar inventario de vacunas.
 
-DROP ROLE IF EXISTS Administrador;
-DROP ROLE IF EXISTS Recepcionista;
-DROP ROLE IF EXISTS Veterinario;
+DROP ROLE IF EXISTS administrador;
+DROP ROLE IF EXISTS recepcionista;
+DROP ROLE IF EXISTS veterinario;
 DROP ROLE IF EXISTS app; --la app en sí no hace nadota, los roles se cambian en el backend
 
-CREATE ROLE Administrador;
+CREATE ROLE administrador;
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO administrador;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO administrador;
 
-CREATE ROLE Recepcionista;
+CREATE ROLE recepcionista;
 GRANT SELECT, INSERT, UPDATE, DELETE ON duenos, mascotas, citas TO recepcionista;
 GRANT SELECT ON veterinarios TO recepcionista;
-REVOKE ALL PRIVILEGES ON vacunas_aplicadas, inventario_vacunas FROM recepcionista;
+REVOKE ALL PRIVILEGES ON vacunas_aplicadas, inventario_vacunas, historial_movimientos, alertas FROM recepcionista;
 
-CREATE ROLE Veterinario;
+CREATE ROLE veterinario;
 GRANT SELECT, INSERT, UPDATE ON mascotas, citas, vacunas_aplicadas TO veterinario;
 GRANT SELECT ON inventario_vacunas, duenos, veterinarios TO veterinario;
+REVOKE ALL PRIVILEGES ON historial_movimientos, alertas FROM veterinario;
 
 CREATE ROLE app WITH 
 LOGIN 
