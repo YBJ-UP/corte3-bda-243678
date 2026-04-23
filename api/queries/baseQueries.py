@@ -5,6 +5,7 @@ from typing import Any, Literal
 from fastapi import HTTPException
 from psycopg import Connection
 from psycopg_pool import ConnectionPool
+from psycopg.errors import InsufficientPrivilege
 from redis import Redis
 
 from model.response import DeleteResponse, PatchResponse, Response
@@ -126,15 +127,18 @@ class BaseQueries:
             }
 
         row:T
-        with self._pg_pool.connection() as conn:
-            self.__prepare_conn(conn, role, current_user_id)
-            if type == "all":
-                row: T = conn.execute(query).fetchall()
-            else:
-                assert id is not None
-                row: T = conn.execute(query, (id,)).fetchone()
-                if row is None:
-                    raise HTTPException(status_code=404, detail=f"No se encontró el {tableAlias} buscado")
+        try:
+            with self._pg_pool.connection() as conn:
+                self.__prepare_conn(conn, role, current_user_id)
+                if type == "all":
+                    row: T = conn.execute(query).fetchall()
+                else:
+                    assert id is not None
+                    row: T = conn.execute(query, (id,)).fetchone()
+                    if row is None:
+                        raise HTTPException(status_code=404, detail=f"No se encontró el {tableAlias} buscado")
+        except InsufficientPrivilege:
+            raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación")
 
         self.__add_to_cache(cache_key=cache_key, data=row)
 
@@ -160,13 +164,16 @@ class BaseQueries:
         t0: float = time.perf_counter()
 
         result: T
-        with self._pg_pool.connection() as conn:
-            self.__prepare_conn(conn, role, current_user_id)
-            result: T = conn.execute(query, params).fetchone()
-            conn.commit()
+        try:
+            with self._pg_pool.connection() as conn:
+                self.__prepare_conn(conn, role, current_user_id)
+                result: T = conn.execute(query, params).fetchone()
+                conn.commit()
 
-        if result is None:
-            raise HTTPException(404, f"No se encontró el {tableName} buscado")
+            if result is None:
+                raise HTTPException(404, f"No se encontró el {tableName} buscado")
+        except InsufficientPrivilege:
+            raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación.")
         
         if isPatch:
             assert id is not None
@@ -195,13 +202,16 @@ class BaseQueries:
         t0: float = time.perf_counter()
 
         result: Any
-        with self._pg_pool.connection() as conn:
-            self.__prepare_conn(conn, role, current_user_id)
-            result: Any = conn.execute(query, (id,)).fetchone()
-            conn.commit()
+        try:
+            with self._pg_pool.connection() as conn:
+                self.__prepare_conn(conn, role, current_user_id)
+                result: Any = conn.execute(query, (id,)).fetchone()
+                conn.commit()
 
-        if result is None:
-            raise HTTPException(404, f"No se encontró el {tableName} buscado")
+            if result is None:
+                raise HTTPException(404, f"No se encontró el {tableName} buscado")
+        except InsufficientPrivilege:
+            raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación.")
         
         cache_key: str = f"{role}:{cachePrefix}:{id}"
         self.__wipe_cache(cache_key)

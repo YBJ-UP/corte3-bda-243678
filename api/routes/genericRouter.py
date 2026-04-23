@@ -1,4 +1,4 @@
-from typing import Type
+from typing import Literal, Type
 
 from fastapi import APIRouter, Depends
 
@@ -6,6 +6,22 @@ from lib.auth import get_user
 from lib.constants import tabla
 from model.response import DeleteResponse, PatchResponse, Response
 from queries.userQueries import UserQueries
+
+def select_get_query(
+        role: Literal['Administrador'] | Literal['Veterinario'] | Literal['Recepcionista'],
+        table: tabla,
+        getOne: bool
+        ) -> str:
+    if not getOne:
+        if role == "Administrador" and table.SELECT_ALL_ADMIN is not None:
+            return table.SELECT_ALL_ADMIN
+        else:
+            return table.SELECT_ALL_QUERY
+    else:
+        if role == "Administrador" and table.SELECT_ONE_ADMIN is not None:
+            return table.SELECT_ONE_ADMIN
+        else:
+            return table.SELECT_ONE_QUERY
 
 def create_routes[T_read, T_add, T_patch](
         table: tabla,
@@ -18,21 +34,23 @@ def create_routes[T_read, T_add, T_patch](
 
     @router.get("", response_model=Response[list[read]])
     def get_All(user: UserQueries = Depends(get_user)) -> Response[list[T_read]]:
+        selected_query: str = select_get_query(role= user.ROLE, table= table, getOne= False)
         return user.getAll(
             model= list[T_read],
             cachePrefix= table.CACHE_PREFIX,
             tableAlias= table.ALIAS,
-            query= table.SELECT_ALL_QUERY
+            query= selected_query
         )
     
     @router.get("/{id}", response_model=Response[read])
     def get_One(id: int, user: UserQueries = Depends(get_user)) -> Response[T_read]:
+        selected_query: str = select_get_query(role= user.ROLE, table= table, getOne= True)
         return user.getOne(
             model= read,
             cachePrefix= table.CACHE_PREFIX,
             id= id,
             tableAlias= table.ALIAS,
-            query= table.SELECT_ONE_QUERY
+            query= selected_query
         )
     
     @router.post("", response_model=Response[add])
