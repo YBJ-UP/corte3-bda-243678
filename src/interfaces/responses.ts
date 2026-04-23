@@ -17,7 +17,3 @@ export interface DeleteResponse {
     cache_invalidated: boolean,
     latency__ms: number
 }
-
-export interface DeleteRequest {
-    id: number
-}

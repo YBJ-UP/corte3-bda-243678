@@ -1,5 +1,5 @@
 import { GetResponse, PatchResponse } from "@/interfaces/responses";
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest } from "next/server";
 
 async function buildHeaders(req: NextRequest): Promise<HeadersInit> {
     const token = req.cookies.get("token")?.value

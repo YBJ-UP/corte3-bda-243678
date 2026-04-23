@@ -7,7 +7,7 @@ export default function Layout({
 }>){
     return (
         <>
-            <div className="flex items-center justify-between bg-green-700 py-10 px-15">
+            <div className="flex items-center justify-between bg-green-700 py-7 px-15">
                 <p className="text-xl font-bold">Veterinaria TuxMascotas</p>
                 <Link href={"/"} className="font-medium hover:font-bold">Cerrar sesión</Link>
             </div>
