@@ -37,7 +37,7 @@ export default function Login() {
                         <p className="text-xl font-semibold">Cargando...</p>
                     )}
                     {data.map((profile) => (
-                    <SessionCard key={profile.id} name={profile.nombre} route="" id={String(profile.id)}/>
+                    <SessionCard key={profile.id} name={profile.nombre} route="/vet" id={String(profile.id)} genToken={true} />
                 ))}
                 </section>
             </section>

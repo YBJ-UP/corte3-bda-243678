@@ -8,9 +8,9 @@ export default function Home() {
         <h2 className="text-xl font-semibold">Inicie sesión como:</h2>
       </div>
         <section className="flex flex-col gap-5 w-50">
-          <SessionCard name="Admin" route="/admin" id={null}/>
-          <SessionCard name="Recepción" route="/recep" id={null}/>
-          <SessionCard name="Veterinarios" route="/login" id={null}/>
+          <SessionCard name="Admin" route="/admin" id={null} genToken={true} />
+          <SessionCard name="Recepción" route="/recep" id={null} genToken={true} />
+          <SessionCard name="Veterinarios" route="/login" id={null} genToken={false} />
         </section>
     </section>
   );

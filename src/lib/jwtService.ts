@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
 
-export function generateToken(role: "a" | "v" | "r" | undefined, id: number | undefined) {
+export function generateToken(role: "a" | "v" | "r" | undefined, id: number | null) {
     const SECRET: string | undefined = process.env.JWT_SECRET
     const TTL: string | undefined = process.env.JWT_TTL
 
@@ -21,7 +21,7 @@ export function generateToken(role: "a" | "v" | "r" | undefined, id: number | un
         return NextResponse.json({ error: "No hay rol" }, { status: 400 })
     }
 
-    if (role == "v" && id === undefined) {
+    if (role == "v" && id === null) {
         return NextResponse.json({ error: "No se obtuvo una sesión válida" }, { status: 400 })
     }
 
