@@ -34,7 +34,7 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
     }, [])
 
     return (
-        <section>
+        <section className="bg-green-950 rounded-3xl px-15 py-5">
             <div className="flex gap-20 items-center mb-2">
                 <h2 className="text-xl">{props.alias}</h2>
                 <button

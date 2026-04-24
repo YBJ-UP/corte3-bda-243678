@@ -10,7 +10,7 @@ export default function Vet() {
             <section>
                 <h2>OPCIONES</h2>
             </section>
-            <section className="flex flex-col gap-10 bg-green-950 rounded-3xl px-15 py-5">
+            <section className="flex flex-col gap-10">
                 <h3 className="text-2xl">DATOS:</h3>
                 <ObjectViewer<Required<Owner>> object={emptyOwner} name="owner" alias="Dueños" />
                 <ObjectViewer<Required<Pet>> object={emptyPet} name="pet" alias="Mascotas registradas" />
