@@ -1,7 +1,7 @@
 import z from "zod";
 
 const ownerGet = z.object({
-    id: z.int().positive().optional(),
+    id: z.int().positive(),
     nombre: z.string().max(100),
     telefono: z.string().max(20).optional(),
     email: z.string().max(100).optional()

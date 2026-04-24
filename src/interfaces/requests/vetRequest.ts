@@ -1,7 +1,7 @@
 import z from "zod";
 
 const vetGet = z.object({
-    id: z.int().positive().optional(),
+    id: z.int().positive(),
     nombre: z.string().max(100),
     cedula: z.string().max(20),
     dias_descanso: z.string().max(50),
