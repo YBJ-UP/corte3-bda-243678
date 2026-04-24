@@ -6,10 +6,17 @@ import { emptyCita, emptyOwner, emptyPet } from "@/lib/constants";
 
 export default function Vet() {
     return (
-        <div>
-            <ObjectViewer<Required<Owner>> object={emptyOwner} name="owner" alias="Dueños" />
-            <ObjectViewer<Required<Cita>> object={emptyCita} name="date" alias="Citas agendadas" />
-            <ObjectViewer<Required<Pet>> object={emptyPet} name="date" alias="Mascotas registradas" />
-        </div>
+        <section>
+            <section>
+                <h2>OPCIONES</h2>
+            </section>
+            <section className="flex flex-col gap-10 bg-green-950 rounded-3xl px-15 py-5">
+                <h3 className="text-2xl">DATOS:</h3>
+                <ObjectViewer<Required<Owner>> object={emptyOwner} name="owner" alias="Dueños" />
+                <ObjectViewer<Required<Pet>> object={emptyPet} name="pet" alias="Mascotas registradas" />
+                <ObjectViewer<Required<Cita>> object={emptyCita} name="date" alias="Citas agendadas" />
+            </section>
+        </section>
+            
     )
 }

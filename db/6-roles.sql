@@ -29,7 +29,7 @@ REVOKE ALL PRIVILEGES ON vacunas_aplicadas, inventario_vacunas, historial_movimi
 
 CREATE ROLE veterinario;
 GRANT SELECT, INSERT, UPDATE ON mascotas, citas, vacunas_aplicadas TO veterinario;
-GRANT SELECT ON inventario_vacunas, duenos, veterinarios TO veterinario;
+GRANT SELECT ON inventario_vacunas, duenos, vet_atiende_mascota TO veterinario;
 REVOKE ALL PRIVILEGES ON historial_movimientos, alertas FROM veterinario;
 
 CREATE ROLE app WITH 
