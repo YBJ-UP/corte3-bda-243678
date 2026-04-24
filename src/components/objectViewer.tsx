@@ -10,6 +10,7 @@ interface objectViewProps<T extends object & { id: number }> {
 
 export default function ObjectViewer<T extends object & { id: number }>(props: objectViewProps<T>) {
     const llaves = Object.keys(props.object)
+    console.log(llaves.length)
     const [ data, setData ] = useState<T[]>([])
     const [ errMsg, setErr ] = useState<string>()
     const [loading, setIsLoading] = useState<boolean>(false)
@@ -35,7 +36,7 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
     return (
         <div>
             <h1>{props.alias}</h1>
-            <div className="flex gap-5">
+            <div className={`grid grid-cols-${llaves.length}`}>
                 {llaves.map((key) => (
                     <p key={key}>{key.toUpperCase()}</p>
                 ))}
@@ -50,9 +51,9 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
                 {!errMsg && data && !loading && (
                     <div>
                         {data.map((obj) => (
-                            <div key={obj.id} className="flex gap-5">
+                            <div key={obj.id} className={`grid grid-cols-${llaves.length}`}>
                                 {Object.entries(obj).map(([key, atr]) => (
-                                    <span key={key}>{String(atr)}</span>
+                                    <span key={key}>{String(atr ?? "-")}</span>
                                 ))}
                             </div>
                         ))}
