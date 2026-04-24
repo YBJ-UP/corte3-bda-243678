@@ -53,7 +53,7 @@ def create_routes[T_read, T_add, T_patch](
             query= selected_query
         )
     
-    @router.post("", response_model=Response[add])
+    @router.post("", response_model=PatchResponse[add])
     def post(data: add, user: UserQueries = Depends(get_user)) -> PatchResponse[T_add]:
         return user.insert(
             model= add,
@@ -62,7 +62,7 @@ def create_routes[T_read, T_add, T_patch](
             tableName= table.NAME
         )
     
-    @router.patch("/{id}", response_model=Response[patch])
+    @router.patch("/{id}", response_model=PatchResponse[patch])
     def update(id: int, data: patch, user: UserQueries = Depends(get_user)) -> PatchResponse[T_patch]:
         return user.patch(
             model= patch,
