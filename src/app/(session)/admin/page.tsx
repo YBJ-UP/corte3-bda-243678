@@ -2,8 +2,8 @@ import ObjectViewer from "@/components/objectViewer";
 import { Owner } from "@/interfaces/requests/ownerRequest";
 import { Vet } from "@/interfaces/requests/vetRequest";
 
-const emptyOwner: Owner = { id:0, nombre:"", telefono:"", email:"" } // solo para sacarle las llaves
-const emptyVet: Vet = { id:0, nombre:"", cedula:"", dias_descanso:"", activo: false } // solo para sacarle las llaves
+const emptyOwner: Required<Owner> = { id:0, nombre:"", telefono:"", email:"" } // solo para sacarle las llaves
+const emptyVet: Required<Vet> = { id:0, nombre:"", cedula:"", dias_descanso:"", activo: false } // solo para sacarle las llaves
 
 export default function Admin() {
 
@@ -11,8 +11,8 @@ export default function Admin() {
         <div>
             <p>intento</p>
             <section className="flex flex-col gap-10">
-                <ObjectViewer<Owner> object={emptyOwner} name="owner" alias="Dueños" />
-                <ObjectViewer<Vet> object={emptyVet} name="vet" alias="Veterinarios" />
+                <ObjectViewer<Required<Owner>> object={emptyOwner} name="owner" alias="Dueños" />
+                <ObjectViewer<Required<Vet>> object={emptyVet} name="vet" alias="Veterinarios" />
             </section>
         </div>
     )

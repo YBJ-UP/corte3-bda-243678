@@ -10,7 +10,7 @@ interface objectViewProps<T extends object & { id: number }> {
 
 export default function ObjectViewer<T extends object & { id: number }>(props: objectViewProps<T>) {
     const llaves = Object.keys(props.object)
-    console.log(llaves.length)
+    console.log(llaves)
     const [ data, setData ] = useState<T[]>([])
     const [ errMsg, setErr ] = useState<string>()
     const [loading, setIsLoading] = useState<boolean>(false)
