@@ -1,4 +1,4 @@
-import { GetResponse, PatchResponse } from "@/interfaces/responses";
+import { DeleteResponse, GetResponse, PatchResponse } from "@/interfaces/responses";
 import { NextRequest } from "next/server";
 
 async function buildHeaders(req: NextRequest): Promise<HeadersInit> {
@@ -78,12 +78,12 @@ export async function patch<T, R>(path: string, req: NextRequest, body: R): Prom
     return request<PatchResponse<T>, R>(req, "PATCH", path, body)
 }
 
-export async function remove<T>(path: string, req: NextRequest): Promise<GetResponse<T>> {
-    return request<GetResponse<T>, null>(req, "GET", path)
+export async function remove(path: string, req: NextRequest): Promise<DeleteResponse> {
+    return request<DeleteResponse, null>(req, "DELETE", path)
 }
 
 // get<Owner>('/owner', req)
 // get<Owner>('/owner/1', req)
 // post<Owner, OwnerPost>('/owner', req)
 // patch<Owner, OwnerPatch>('/owner', req)
-// remove<Owner, deleteRequest>('/owner/1', req)
+// remove<Owner>('/owner/1', req)

@@ -1,21 +1,6 @@
-import { Cita } from "@/interfaces/requests/dateRequest";
-import { Owner } from "@/interfaces/requests/ownerRequest";
-import { Pet } from "@/interfaces/requests/petRequest";
-import { Vaccine } from "@/interfaces/requests/vaccineRequest";
-import { Vet } from "@/interfaces/requests/vetRequest";
-import { get } from "@/lib/apiClient";
+import { get, post } from "@/lib/apiClient";
+import { getPostType, getType } from "@/utils/typeUtils";
 import { NextRequest, NextResponse } from "next/server";
-
-function getType(name: string) {
-    switch (name){
-        case "owner": return { nombre: "" } as Owner
-        case "vet": return { nombre: "" } as Vet
-        case "pet": return { nombre: "" } as Pet
-        case "date": return { motivo: "" } as Cita
-        case "vaccine": return { nombre: "" } as Vaccine
-        default: return null
-    }
-}
 
 export async function GET(req: NextRequest, { params }: { params: { name: string } }) {
     try {
@@ -23,6 +8,25 @@ export async function GET(req: NextRequest, { params }: { params: { name: string
         const typeObj = getType(name)
         type reqT = typeof typeObj
         const data = await get<reqT>(`/${name}`, req)
+        return NextResponse.json(data)
+    } catch (e) {
+        return NextResponse.json({ message: e.message }, { status: 500 })
+    }
+}
+
+export async function POST(req: NextRequest, { params }: { params: { name: string } }) {
+    try {
+        const { name } = await params
+        
+        const typeObj = getType(name)
+        type reqT = typeof typeObj
+        
+        const postObj = getPostType(name)
+        type postT = typeof postObj
+        
+        const body = await req.body as postT
+
+        const data = await post<reqT, postT>(`/${name}`, req, body)
         return NextResponse.json(data)
     } catch (e) {
         return NextResponse.json({ message: e.message }, { status: 500 })
