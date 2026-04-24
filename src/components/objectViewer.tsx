@@ -51,8 +51,8 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
                     <div>
                         {data.map((obj) => (
                             <div key={obj.id} className="flex gap-5">
-                                {Object.entries(obj).map((atr, key: number) => (
-                                    <span key={key}>{atr}</span>
+                                {Object.entries(obj).map(([key, atr]) => (
+                                    <span key={key}>{String(atr)}</span>
                                 ))}
                             </div>
                         ))}
