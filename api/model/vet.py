@@ -21,3 +21,7 @@ class VetPatch(BaseModel):
     cedula: Annotated[str, StringConstraints(max_length=20)] | None = None
     dias_descanso: Annotated[str, StringConstraints(max_length=50)] | None = None
     activo: bool = True
+
+class VetProfile(BaseModel):
+    id: int
+    nombre: str
