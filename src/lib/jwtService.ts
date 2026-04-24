@@ -53,7 +53,7 @@ export function getNameFromJWT(req: NextRequest) {
     }
 
     const decoded = jwt.decode(token) as { name?: string } | null
-    console.log(decoded)
+    console.log(decoded, token)
     
     const res = NextResponse.json({ name: decoded?.name })
 

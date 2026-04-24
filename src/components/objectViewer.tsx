@@ -40,9 +40,9 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
                 <button
                     type="button"
                     onClick={() => setIsOpen(!isOpen)}
-                    className="px-10 py-2 bg-emerald-500 rounded-2xl"
+                    className={`px-10 py-2 ${loading ? "bg-gray-500" : errMsg ? "bg-red-500" : "bg-emerald-500"} rounded-2xl`}
                 >
-                    {isOpen ? "Cerrar" : "Ver"}
+                    {loading ? "Cargando..." : !errMsg ? isOpen ? "Cerrar" : "Ver" : errMsg}
                 </button>
             </div>
 
