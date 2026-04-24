@@ -1,5 +1,10 @@
 "use client"
 
+import { Cita } from "@/interfaces/requests/dateRequest"
+import { Owner } from "@/interfaces/requests/ownerRequest"
+import { Pet } from "@/interfaces/requests/petRequest"
+import { Vaccine } from "@/interfaces/requests/vaccineRequest"
+import { Vet } from "@/interfaces/requests/vetRequest"
 import { tabla } from "@/lib/constants"
 import { useState } from "react"
 
@@ -10,8 +15,32 @@ interface ObjectEditorProps {
 }
 
 export default function ObjectEditor(props: ObjectEditorProps) {
-    const [ currentSelect, setCurrentSelect ] = useState<string[]>([])
+    const [ currentSelect, setCurrentSelect ] = useState<string[]>(props.objects[0].attributes)
+    const [ currentObjName, setCurrentObjName ] = useState<string>(props.objects[0].name)
+    const [ selectedTableObj, setSelectedTableObj ] = useState<Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[] | null>(null)
     const [ action, setAction ] = useState<"Añadir" | "Eliminar" | "Editar">("Añadir")
+
+    function setSelectionObj(selection: tabla) {
+        setCurrentSelect(selection.attributes)
+        setCurrentObjName(selection.name)
+    }
+
+    async function getEditInfo(action: "Añadir" | "Eliminar" | "Editar") {
+        setAction(action)
+        if (action === "Editar") {
+            try {
+                const response = await fetch(`/api/${currentObjName}`)
+                if (!response.ok) {
+                    console.error("No se pudo extrar la información del servidor")
+                }
+                const json = await response.json() as Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[]
+                setSelectedTableObj(json)
+            } catch(e: any) {
+                console.error("Error: ", e.message)
+            }
+        }
+    }
+
     return (
         <>
             {props.isOpen && (
@@ -29,7 +58,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                         className="bg-gray-800"
                                         onChange={(e) => {
                                             const selected = props.objects.find(obj => obj.name === e.target.value)
-                                            if (selected) setCurrentSelect(selected.attributes)
+                                            if (selected) setSelectionObj(selected)
                                         }}
                                     >
                                         {props.objects.map((obj) => (
@@ -42,7 +71,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                     <select
                                         name="actionSelector"
                                         className="bg-gray-800"
-                                        onChange={(e) => setAction(e.target.value as "Añadir" | "Editar" | "Eliminar")}
+                                        onChange={(e) => getEditInfo(e.target.value as "Añadir" | "Eliminar" | "Editar")}
                                     >
                                         <option value="Añadir">Añadir</option>
                                         <option value="Editar">Editar</option>
@@ -51,20 +80,28 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                 </div>
                             </div>
 
+                            {selectedTableObj && (
+                                <div>
+                                    {selectedTableObj.map((row) => (
+                                        <p>{row.id}</p>
+                                    ))}
+                                </div>
+                            )}
+
                             <div>
-                                <ol>
+                                <ol className="grid grid-cols-3 gap-5">
                                     {currentSelect.map((attr, key:  number) => (
-                                        <li key={key}>
-                                            <span>{attr}</span>
+                                        <li key={key} className="flex flex-col">
+                                            <span>{attr.toLocaleUpperCase()}</span>
                                             <input type="text" name={attr} id={String(key)} placeholder={attr} />
                                         </li>
                                     ))}
                                 </ol>
                             </div>
                             
-                            <div>
+                            <div className="bg-gray-700 px-15 py-5 rounded-2xl">
                                 <p>Acción:</p>
-                                <p>{action}</p>
+                                <p className="font-bold">{action}</p>
                             </div>
 
                             <button type="button" onClick={props.onClose} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
