@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from "react"
 
-interface objectViewProps<T extends object> {
+interface objectViewProps<T extends object & { id: number }> {
     object: T
     name: string
     alias: string
 }
 
-export default function ObjectViewer<T extends object>(props: objectViewProps<T>) {
+export default function ObjectViewer<T extends object & { id: number }>(props: objectViewProps<T>) {
     const llaves = Object.keys(props.object)
     const [ data, setData ] = useState<T[]>([])
+    const [ errMsg, setErr ] = useState<string>()
     const [loading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {
@@ -20,8 +21,10 @@ export default function ObjectViewer<T extends object>(props: objectViewProps<T>
                 const res = await fetch(`/api/${props.name}`)
                 const json = await res.json()
                 setData(json.data)
+                setErr("")
             } catch {
-                console.error("XD")
+                console.error("No se pudieron obtener los datos correctamente.")
+                setErr("No se pudieron obtener los datos correctamente.")
             } finally {
                 setIsLoading(false)
             }
@@ -37,7 +40,25 @@ export default function ObjectViewer<T extends object>(props: objectViewProps<T>
                     <p key={key}>{key.toUpperCase()}</p>
                 ))}
             </div>
-            
+            <div>
+                {loading && (
+                    <p className="text-xl font-semibold">Cargando...</p>
+                )}
+                {errMsg && (
+                    <p>{errMsg}</p>
+                )}
+                {!errMsg && data && !loading && (
+                    <div>
+                        {data.map((obj) => (
+                            <div key={obj.id} className="flex gap-5">
+                                {Object.entries(obj).map((atr, key: number) => (
+                                    <span key={key}>{atr}</span>
+                                ))}
+                            </div>
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     )
 }
