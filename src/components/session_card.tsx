@@ -23,7 +23,7 @@ export default function SessionCard(data: SessionCardProps) {
 
     async function login() {
         const role = chooseRole(data.route)
-        const body = JSON.stringify({ role, id: data.id })
+        const body = JSON.stringify({ name: data.name, role, id: data.id })
         console.log("iniciando sesión como: ", data.name)
         const response =  await fetch('/api/auth/login', { method: "POST", body })
         if (!response.ok) {

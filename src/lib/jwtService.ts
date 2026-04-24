@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { NextResponse } from 'next/server'
 
-export function generateToken(role: "a" | "v" | "r" | undefined, id: number | null) {
+export function generateToken(name: string, role: "a" | "v" | "r" | undefined, id: number | null) {
     const SECRET: string | undefined = process.env.JWT_SECRET
     const TTL: string | undefined = process.env.JWT_TTL
 
@@ -25,7 +25,7 @@ export function generateToken(role: "a" | "v" | "r" | undefined, id: number | nu
         return NextResponse.json({ error: "No se obtuvo una sesión válida" }, { status: 400 })
     }
 
-    const token = jwt.sign({ role: role, v: id }, SECRET, { expiresIn: Number(TTL) })
+    const token = jwt.sign({ name: name, role: role, v: id }, SECRET, { expiresIn: Number(TTL) })
 
     const response = NextResponse.json({ message: "Token generado con éxito" })
     response.cookies.set('token', token, {
