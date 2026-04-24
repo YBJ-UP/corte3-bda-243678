@@ -2,11 +2,11 @@ import { get, post } from "@/lib/apiClient";
 import { getPostType, getType } from "@/utils/typeUtils";
 import { NextRequest, NextResponse } from "next/server";
 
-export async function GET(req: NextRequest, { params }: { params: { name: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { name: string } }) { //get general
     try {
         const { name } = await params
         const typeObj = getType(name)
-        type reqT = typeof typeObj
+        type reqT = (typeof typeObj)[]
         const data = await get<reqT>(`/${name}`, req)
         return NextResponse.json(data)
     } catch (e) {
