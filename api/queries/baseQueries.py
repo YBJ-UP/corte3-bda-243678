@@ -114,7 +114,8 @@ class BaseQueries:
             current_user_id: int | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{role}:{cachePrefix}:{id}" if id is not None else f"{role}:{cachePrefix}"
+        cache_key: str = f"{role}:{cachePrefix}:{current_user_id}" if current_user_id is not None else f"{role}:{cachePrefix}"
+        print(f"cache para {cache_key}")
 
         cached = self.__get_from_cache(cache_key)
         if cached is not None:
@@ -176,8 +177,8 @@ class BaseQueries:
             raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación.")
         
         if isPatch:
-            assert id is not None
-            cache_key: str = f"{role}:{cachePrefix}:{id}"
+            cache_key: str = f"{role}:{cachePrefix}:{current_user_id}" if current_user_id is not None else f"{role}:{cachePrefix}"
+            print(f"cache para {cache_key}")
             self.__wipe_cache(cache_key)
         else:
             self.__wipe_cache(f"{role}:{cachePrefix}")
@@ -213,7 +214,8 @@ class BaseQueries:
         except InsufficientPrivilege:
             raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación.")
         
-        cache_key: str = f"{role}:{cachePrefix}:{id}"
+        cache_key: str = f"{role}:{cachePrefix}:{current_user_id}" if current_user_id is not None else f"{role}:{cachePrefix}"
+        print(f"cache para {cache_key}")
         self.__wipe_cache(cache_key)
         
         elapsed: float = (time.perf_counter() - t0) * 1000
