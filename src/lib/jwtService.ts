@@ -25,7 +25,7 @@ export function generateToken(name: string, role: "a" | "v" | "r" | undefined, i
         return NextResponse.json({ error: "No se obtuvo una sesión válida" }, { status: 400 })
     }
 
-    const token = jwt.sign({ name: name, role: role, v: id }, SECRET, { expiresIn: Number(TTL) })
+    const token = jwt.sign({ name: name, role: role, v: Number(id) }, SECRET, { expiresIn: Number(TTL) })
 
     const response = NextResponse.json({ message: "Token generado con éxito" })
     response.cookies.set('token', token, {

@@ -23,7 +23,7 @@ def get_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)) -> Use
         match role:
             case "a": return Admin
             case "v":
-                vet_id: int | None = payload.get("v")
+                vet_id: str | None = payload.get("v")
                 if not isinstance(vet_id, int):
                     raise HTTPException(403, "Token inválido")
                 return Veterinario.appendId(vet_id)
