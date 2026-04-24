@@ -16,8 +16,6 @@ function getType(name: string) {
 
 export async function GET(req: NextRequest, { params }: { params: { name: string } }) {
     try {
-        console.log(await params.name)
-        console.log(params.name)
         const { name } = await params
         const data = await get<unknown>(`/${name}`, req)
         return NextResponse.json(data)
