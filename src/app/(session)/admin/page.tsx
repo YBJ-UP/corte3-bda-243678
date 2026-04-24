@@ -14,10 +14,9 @@ export default function Admin() {
     const [ editorOpen, setEditorOpen ] = useState<boolean>(false)
 
     return (
-        <section>
+        <section className="flex flex-col gap-5">
             <section>
-                <h2 className="text-2xl">OPCIONES:</h2>
-                <button type="button" onClick={() => setEditorOpen(true)}>Editar datos</button>
+                <button type="button" onClick={() => setEditorOpen(true)} className="px-15 py-3 bg-green-600 rounded-2xl">Editar datos</button>
                 <ObjectEditor
                     objects={[tablas.OWNER, tablas.VET, tablas.PET, tablas.DATE, tablas.VAXX]}
                     isOpen={editorOpen}
