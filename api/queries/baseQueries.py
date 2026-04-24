@@ -26,7 +26,7 @@ class BaseQueries:
 
         if role == "Veterinario":
             assert current_user_id is not None, "Id inválido"
-            conn.execute("SET LOCAL app.current_id = %s;", (current_user_id,))
+            conn.execute(f"SET LOCAL app.current_id = {int(current_user_id)};")
         
         return
 

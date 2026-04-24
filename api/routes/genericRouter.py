@@ -12,6 +12,7 @@ def select_get_query(
         table: tabla,
         getOne: bool
         ) -> str:
+    print(f"Seleccionando {"1" if getOne else "muchos"} de {table.NAME} como {role}")
     if not getOne:
         if role == "Administrador" and table.SELECT_ALL_ADMIN is not None:
             return table.SELECT_ALL_ADMIN
