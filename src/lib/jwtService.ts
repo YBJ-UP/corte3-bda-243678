@@ -37,3 +37,10 @@ export function generateToken(name: string, role: "a" | "v" | "r" | undefined, i
 
     return response
 }
+
+export function destroyToken() {
+    const res = NextResponse.json({ message: "Sesión cerrada" }, { status: 204 })
+    res.cookies.delete("token")
+
+    return res
+}

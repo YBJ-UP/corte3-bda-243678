@@ -9,7 +9,6 @@ export default function Admin() {
 
     return (
         <div>
-            <p>intento</p>
             <section className="flex flex-col gap-10">
                 <ObjectViewer<Required<Owner>> object={emptyOwner} name="owner" alias="Dueños" />
                 <ObjectViewer<Required<Vet>> object={emptyVet} name="vet" alias="Veterinarios" />

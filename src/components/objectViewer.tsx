@@ -10,10 +10,10 @@ interface objectViewProps<T extends object & { id: number }> {
 
 export default function ObjectViewer<T extends object & { id: number }>(props: objectViewProps<T>) {
     const llaves = Object.keys(props.object)
-    console.log(llaves.length)
     const [ data, setData ] = useState<T[]>([])
     const [ errMsg, setErr ] = useState<string>()
     const [loading, setIsLoading] = useState<boolean>(false)
+    const [ isOpen, setIsOpen ] = useState<boolean>(true)
 
     useEffect(() => {
         const fetchData = async () => {
@@ -34,32 +34,50 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
     }, [])
 
     return (
-        <div>
-            <h1>{props.alias}</h1>
-            <div className="grid grid-cols-7">
-                {llaves.map((key) => (
-                    <p key={key}>{key.toUpperCase()}</p>
-                ))}
+        <section>
+            <div className="flex gap-20 items-center mb-2">
+                <h2 className="text-xl">{props.alias}</h2>
+                <button
+                    type="button"
+                    onClick={() => setIsOpen(!isOpen)}
+                    className="px-10 py-2 bg-emerald-500 rounded-2xl"
+                >
+                    {isOpen ? "Cerrar" : "Ver"}
+                </button>
             </div>
-            <div>
-                {loading && (
-                    <p className="text-xl font-semibold">Cargando...</p>
-                )}
-                {errMsg && (
-                    <p>{errMsg}</p>
-                )}
-                {!errMsg && data && !loading && (
+
+            <section>
+                {!isOpen && (
+                    <p>------------------------------------------------------------</p>
+                ) || (
                     <div>
-                        {data.map((obj) => (
-                            <div key={obj.id} className="grid grid-cols-7 my-1">
-                                {Object.entries(obj).map(([key, atr]) => (
-                                    <span key={key}>{String(atr ?? "-")}</span>
+                        <div className="grid grid-cols-7">
+                            {llaves.map((key) => (
+                                <p key={key}>{key.toUpperCase()}</p>
+                            ))}
+                        </div>
+                        {loading && (
+                            <p className="text-xl font-semibold">Cargando...</p>
+                        )}
+                        {errMsg && (
+                            <p>{errMsg}</p>
+                        )}
+                        {!errMsg && data && !loading && (
+                            <>
+                                {data.map((obj) => (
+                                    <div key={obj.id} className="grid grid-cols-7 my-1">
+                                        {Object.entries(obj).map(([key, atr]) => (
+                                            <span key={key}>{String(atr ?? "-")}</span>
+                                        ))}
+                                    </div>
                                 ))}
-                            </div>
-                        ))}
+                            </>
+                        )}
                     </div>
+                    
                 )}
-            </div>
-        </div>
+                
+            </section>
+        </section>
     )
 }
