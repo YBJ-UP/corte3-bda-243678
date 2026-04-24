@@ -13,7 +13,7 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
     const [ data, setData ] = useState<T[]>([])
     const [ errMsg, setErr ] = useState<string>()
     const [loading, setIsLoading] = useState<boolean>(false)
-    const [ isOpen, setIsOpen ] = useState<boolean>(true)
+    const [ isOpen, setIsOpen ] = useState<boolean>(false)
 
     useEffect(() => {
         const fetchData = async () => {

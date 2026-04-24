@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link";
 import { redirect } from "next/navigation";
 
 export default function Layout({
@@ -11,7 +10,7 @@ export default function Layout({
 
     async function logout() {
         console.log("Cerrando sesión...")
-        const response =  await fetch('/api/auth/logout', { method: "POST" })
+        const response =  await fetch('/api/auth/logout', { method: "POST"})
         if (!response.ok) {
             console.error("No se pudo generar el token: ", await response.json())
         }

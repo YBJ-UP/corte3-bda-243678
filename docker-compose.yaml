@@ -63,19 +63,6 @@ services:
     networks:
       - redis-net
 
-  nextjs:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: vet-front 
-    restart: unless-stopped
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env
-    depends_on:
-      backend:
-        condition: service_started
 
 volumes:
   pgdata:
