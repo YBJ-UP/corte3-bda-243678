@@ -4,9 +4,11 @@ from lib.auth import get_user
 from lib.db import redis_client, check_connections
 from lib.constants import TABLES
 
+from lib.roles import Admin
 from model.dates import Date, DatePatch, DatePost
 from model.owner import Owner, OwnerPatch, OwnerPost
 from model.pet import Pet, PetPatch, PetPost
+from model.response import Response
 from model.vaccine import Vaccine, VaccinePatch, VaccinePost
 from model.vet import Vet, VetPatch, VetPost
 from queries.userQueries import UserQueries
@@ -84,6 +86,16 @@ def cacheInfo():
         "evicted_keys": info.get("evicted_keys", 0),
         "total_keys": redis_client.dbsize(),
     }
+
+
+@app.get("/veterinarios")
+def getVetProfiles() -> Response[list[Vet]]: # método no protegido para extraer los nombres de los vets para iniciar sesión
+    return Admin.getAll(
+        model= list[Vet],
+        cachePrefix= TABLES["OWNER"].CACHE_PREFIX,
+        tableAlias= TABLES["OWNER"].ALIAS,
+        query= "SELECT id, nombre FROM veterinarios;"
+    )
 
 # Carga de endpoints
 # Endpoints Admin
