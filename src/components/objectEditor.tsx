@@ -19,10 +19,12 @@ export default function ObjectEditor(props: ObjectEditorProps) {
     const [ currentObjName, setCurrentObjName ] = useState<string>(props.objects[0].name)
     const [ selectedTableObj, setSelectedTableObj ] = useState<Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[] | null>(null)
     const [ action, setAction ] = useState<"Añadir" | "Eliminar" | "Editar">("Añadir")
+    const [selectedId, setSelectedId] = useState<number | null>(null)
 
     function setSelectionObj(selection: tabla) {
         setCurrentSelect(selection.attributes)
         setCurrentObjName(selection.name)
+        getEditInfo(action)
     }
 
     async function getEditInfo(action: "Añadir" | "Eliminar" | "Editar") {
@@ -33,8 +35,8 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                 if (!response.ok) {
                     console.error("No se pudo extrar la información del servidor")
                 }
-                const json = await response.json() as Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[]
-                setSelectedTableObj(json)
+                const json = await response.json()
+                setSelectedTableObj(json.data as Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[])
             } catch(e: any) {
                 console.error("Error: ", e.message)
             }
@@ -83,19 +85,47 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                             {selectedTableObj && (
                                 <div>
                                     {selectedTableObj.map((row) => (
-                                        <p>{row.id}</p>
+                                        <div key={row.id}>
+                                            <p>{row.id}</p>
+                                            <p>{row.nombre}</p>
+                                        </div>
                                     ))}
                                 </div>
                             )}
 
                             <div>
                                 <ol className="grid grid-cols-3 gap-5">
-                                    {currentSelect.map((attr, key:  number) => (
-                                        <li key={key} className="flex flex-col">
-                                            <span>{attr.toLocaleUpperCase()}</span>
-                                            <input type="text" name={attr} id={String(key)} placeholder={attr} />
-                                        </li>
-                                    ))}
+                                    {(action === "Editar" || action === "Eliminar") && selectedTableObj && (
+                                        <div className="flex flex-col gap-2 bg-gray-800 p-5 rounded-2xl max-h-60 overflow-y-auto">
+                                            <p className="font-bold">Selecciona un registro:</p>
+                                            {selectedTableObj.map((row) => (
+                                                <button
+                                                    key={row.id}
+                                                    type="button"
+                                                    className="text-left px-4 py-2 hover:bg-gray-700 rounded"
+                                                    onClick={() => setSelectedId(row.id)}
+                                                >
+                                                    ID: {row.id}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {action !== "Eliminar" && (
+                                        <div>
+                                            <ol className="grid grid-cols-3 gap-5">
+                                                {currentSelect
+                                                    .filter(attr => attr !== "id") // ← id no se edita manualmente
+                                                    .map((attr) => (
+                                                        <li key={attr} className="flex flex-col">
+                                                            <span>{attr.toLocaleUpperCase()}</span>
+                                                            <input type="text" name={attr} placeholder={attr} />
+                                                        </li>
+                                                    ))
+                                                }
+                                            </ol>
+                                        </div>
+                                    )}
                                 </ol>
                             </div>
                             

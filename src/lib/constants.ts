@@ -28,17 +28,17 @@ export const tablas = {
         attributes: ["id", "nombre", "cedula", "dias_descanso", "activo"]
     },
     "PET": {
-        name: "mascotas",
+        name: "pet",
         alias: "Mascotas",
         attributes: ["id", "nombre", "especie", "fecha_nacimiento", "dueno_id"]
     },
     "DATE": {
-        name: "citas",
+        name: "date",
         alias: "Citas",
         attributes: ["id", "mascota_id", "veterinario_id", "fecha_hora", "motivo", "costo", "estado"]
     },
     "VAXX": {
-        name: "inventario_vacunas",
+        name: "vaccine",
         alias: "Vacunas",
         attributes: ["id", "nombre", "stock_actual", "stock_minimo", "costo_unitario"]
     }
