@@ -1,4 +1,4 @@
-import { get } from "@/lib/apiClient";
+import { unprotectedRequest } from "@/lib/apiClient";
 import { NextRequest, NextResponse } from "next/server";
 
 export interface VetProfile {
@@ -8,7 +8,8 @@ export interface VetProfile {
 
 export async function GET(req: NextRequest) {
     try {
-        const data = await get<VetProfile[]>('/veterinarios', req)
+        const data = await unprotectedRequest<VetProfile[]>()
+        return NextResponse.json(data)
     } catch (e) {
         return NextResponse.json({ message: e.message }, { status: 500 })
     }

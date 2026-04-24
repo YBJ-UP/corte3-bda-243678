@@ -43,6 +43,29 @@ export async function request<T, R>(req: NextRequest, method: string, path: stri
     return res
 }
 
+export async function unprotectedRequest<T>() {
+    const BASE = process.env.BACKEND_URL;
+    if (!BASE) {
+        throw new Error('No se puede establecer conexión con el backend');
+    }
+
+    const response = await fetch(new URL('/veterinarios', BASE))
+
+    if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error?.detail ?? `Error ${response.status}\n${error}`)
+    }
+
+    let res: T
+    try {
+        res = await response.json()
+    } catch {
+        throw new Error("Error al obtener la respuesta del servidor")
+    }
+
+    return res
+}
+
 export async function get<T>(path: string, req: NextRequest): Promise<GetResponse<T>> {
     return request<GetResponse<T>, null>(req, "GET", path)
 }
