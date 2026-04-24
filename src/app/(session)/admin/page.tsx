@@ -9,8 +9,10 @@ export default function Admin() {
     return (
         <div>
             <p>intento</p>
-            <ObjectViewer<Owner> object={emptyOwner} name="owner" alias="Dueños" />
-            <ObjectViewer<Vet> object={emptyVet} name="vet" alias="Veterinarios" />
+            <section className="flex flex-col gap-10">
+                <ObjectViewer<Owner> object={emptyOwner} name="owner" alias="Dueños" />
+                <ObjectViewer<Vet> object={emptyVet} name="vet" alias="Veterinarios" />
+            </section>
         </div>
     )
 }

@@ -11,7 +11,9 @@ export default function Layout({
                 <p className="text-xl font-bold">Veterinaria TuxMascotas</p>
                 <Link href={"/"} className="font-medium hover:font-bold">Cerrar sesión</Link>
             </div>
-            {children}
+            <div className="m-10">
+                {children}
+            </div>
         </>
     )
 }

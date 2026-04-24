@@ -3,6 +3,7 @@ import Link from "next/link"
 interface SessionCardProps {
     name: string
     route: string
+    id: string | null
 }
 
 export default function SessionCard(data: SessionCardProps) {
