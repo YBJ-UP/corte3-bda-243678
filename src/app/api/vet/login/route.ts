@@ -1,12 +1,12 @@
 import { unprotectedRequest } from "@/lib/apiClient";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 
 export interface VetProfile {
     id: number
     nombre: string
 }
 
-export async function GET(req: NextRequest) {
+export async function GET() {
     try {
         const data = await unprotectedRequest<VetProfile[]>()
         return NextResponse.json(data)
