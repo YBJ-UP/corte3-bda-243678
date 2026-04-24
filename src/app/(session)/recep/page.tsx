@@ -7,8 +7,8 @@ import { emptyCita, emptyOwner, emptyPet } from "@/lib/constants";
 export default function Reception() {
     return (
         <section>
-            <section>
-                <h2>OPCIONES</h2>
+            <section className="text-2xl">
+                <h2>OPCIONES:</h2>
             </section>
             <section className="flex flex-col gap-10">
                 <h3 className="text-2xl">DATOS:</h3>
