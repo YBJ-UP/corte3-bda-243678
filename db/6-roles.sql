@@ -21,7 +21,9 @@ GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO administrador;
 GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO administrador;
 
 CREATE ROLE recepcionista;
-GRANT SELECT, INSERT, UPDATE, DELETE ON duenos, mascotas, citas TO recepcionista;
+GRANT SELECT, INSERT, UPDATE ON citas TO recepcionista;
+GRANT SELECT, INSERT ON duenos, mascotas TO recepcionista;
+GRANT USAGE ON SEQUENCE duenos_id_seq, mascotas_id_seq TO recepcionista;
 GRANT SELECT ON veterinarios TO recepcionista;
 REVOKE ALL PRIVILEGES ON vacunas_aplicadas, inventario_vacunas, historial_movimientos, alertas FROM recepcionista;
 

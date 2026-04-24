@@ -6,7 +6,7 @@ from pydantic import BaseModel, StringConstraints
 class Vet(BaseModel):
     id: int
     nombre: Annotated[str, StringConstraints(max_length=100)]
-    cedula: Annotated[str, StringConstraints(max_length=20)]
+    cedula: Annotated[str, StringConstraints(max_length=20)] | None = None
     dias_descanso: Annotated[str, StringConstraints(max_length=50)]
     activo: bool = True
 

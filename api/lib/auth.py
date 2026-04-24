@@ -18,6 +18,7 @@ def get_user(credentials: HTTPAuthorizationCredentials = Depends(bearer)) -> Use
     try:
         payload = jwt.decode(credentials.credentials, __SECRET, algorithms=["HS256"])
         role: str | None = payload.get("role")
+        print(payload)
 
         match role:
             case "a": return Admin
