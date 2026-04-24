@@ -11,9 +11,22 @@ interface objectViewProps<T extends object> {
 export default function ObjectViewer<T extends object>(props: objectViewProps<T>) {
     const llaves = Object.keys(props.object)
     const [ data, setData ] = useState<T[]>([])
+    const [loading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        fetch(`/api/${props.name}`).then(r => r.json()).then(setData).then( () => console.log(data) )
+        const fetchData = async () => {
+            try {
+                setIsLoading(true)
+                const res = await fetch(`/api/${props.name}`)
+                const json = await res.json()
+                setData(json.data)
+            } catch {
+                console.error("XD")
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchData()
     }, [])
 
     return (

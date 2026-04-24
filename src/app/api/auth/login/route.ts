@@ -1,8 +1,7 @@
 import { generateToken } from "@/lib/jwtService"
 
 export async function POST(req: Request) {
-    const body = await req.json()
-    console.log(body)
+    const { role, id } = await req.json()
 
-    return generateToken("a", null)
+    return generateToken(role, id)
 }

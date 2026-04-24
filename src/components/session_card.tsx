@@ -27,7 +27,7 @@ export default function SessionCard(data: SessionCardProps) {
         console.log("iniciando sesión como: ", data.name)
         const response =  await fetch('/api/auth/login', { method: "POST", body })
         if (!response.ok) {
-            console.error("No se pudo generar el token")
+            console.error("No se pudo generar el token: ", await response.json())
             redirect("/")
         }
         redirect(data.route)

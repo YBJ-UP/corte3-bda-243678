@@ -16,7 +16,10 @@ function getType(name: string) {
 
 export async function GET(req: NextRequest, { params }: { params: { name: string } }) {
     try {
-        const data = await get<unknown>(`/${params.name}`, req)
+        console.log(await params.name)
+        console.log(params.name)
+        const { name } = await params
+        const data = await get<unknown>(`/${name}`, req)
         return NextResponse.json(data)
     } catch (e) {
         return NextResponse.json({ message: e.message }, { status: 500 })
