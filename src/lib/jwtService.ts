@@ -49,13 +49,13 @@ export function getNameFromJWT(req: NextRequest) {
     const token = req.cookies.get("token")?.value
 
     if (!token) {
-        throw new Error("No hay sesión activa")
+        return NextResponse.json({ error: "No hay sesión activa" }, { status: 401 })
     }
 
-    const decoded = jwt.decode(token)
+    const decoded = jwt.decode(token) as { name?: string } | null
     console.log(decoded)
     
-    const res = NextResponse.json({ name: decoded?.search("name") })
+    const res = NextResponse.json({ name: decoded?.name })
 
     return res
 }

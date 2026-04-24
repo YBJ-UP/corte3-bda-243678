@@ -19,20 +19,23 @@ export default function Layout({
         redirect("/")
     }
 
-    async function getName() {
-        const response =  await fetch('/api/auth/name')
-        if (!response.ok) {
-            console.error("No se pudo generar el token: ", await response.json())
-        }
-        return await response.json()
-    }
-
     const [ name, setName ] = useState<string>("")
+    const [loading, setIsLoading] = useState<boolean>(false)
 
     useEffect(() => {
-        const fetchName = async () => setName(await getName())
+        const fetchName = async () => {
+            try {
+                setIsLoading(true)
+                const res = await fetch(`/api/auth/name`)
+                const json = await res.json()
+                setName(json.name)
+            } catch {
+                console.error("No se pudieron obtener los datos correctamente.")
+            } finally {
+                setIsLoading(false)
+            }
+        }
         fetchName()
-        console.log(name)
     }, [])
 
     return (
@@ -40,7 +43,7 @@ export default function Layout({
             <div className="flex items-center justify-between bg-green-700 py-7 px-15">
                 <div>
                     <h1 className="text-xl font-bold">Veterinaria TuxMascotas</h1>
-                    <p>{name} aaaa</p>
+                    <p>{name}</p>
                 </div>
                 <button className="font-medium hover:font-bold" onClick={logout}>Cerrar sesión</button>
             </div>
