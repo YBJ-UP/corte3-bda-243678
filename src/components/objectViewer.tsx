@@ -36,7 +36,7 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
     return (
         <div>
             <h1>{props.alias}</h1>
-            <div className={`grid grid-cols-${llaves.length}`}>
+            <div className="grid grid-cols-7">
                 {llaves.map((key) => (
                     <p key={key}>{key.toUpperCase()}</p>
                 ))}
@@ -51,7 +51,7 @@ export default function ObjectViewer<T extends object & { id: number }>(props: o
                 {!errMsg && data && !loading && (
                     <div>
                         {data.map((obj) => (
-                            <div key={obj.id} className={`grid grid-cols-${llaves.length}`}>
+                            <div key={obj.id} className="grid grid-cols-7 my-1">
                                 {Object.entries(obj).map(([key, atr]) => (
                                     <span key={key}>{String(atr ?? "-")}</span>
                                 ))}
