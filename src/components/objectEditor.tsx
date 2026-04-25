@@ -20,6 +20,17 @@ export default function ObjectEditor(props: ObjectEditorProps) {
     const [ selectedTableObj, setSelectedTableObj ] = useState<Owner[] | Vet[] | Pet[] | Cita[] | Vaccine[] | null>(null)
     const [ action, setAction ] = useState<"Añadir" | "Eliminar" | "Editar">("Añadir")
     const [selectedId, setSelectedId] = useState<number | null>(null)
+    const [formValues, setFormValues] = useState<Record<string, string>>({})
+    const selectedObj = selectedTableObj?.find(row => row.id === selectedId) ?? null
+
+    function handleSelectRow(row: Owner | Vet | Pet | Cita | Vaccine) {
+        setSelectedId(row.id)
+        const values: Record<string, string> = {}
+        Object.entries(row).forEach(([key, val]) => {
+            values[key] = String(val ?? "")
+        })
+        setFormValues(values)
+    }
 
     async function setSelectionObj(selection: tabla) {
         setCurrentSelect(selection.attributes)
@@ -105,7 +116,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                                 key={row.id}
                                                 type="button"
                                                 className={`text-left px-4 py-2 ${row.id === selectedId ? "bg-green-950 hover:bg-green-900" : "hover:bg-gray-700 rounded"}`}
-                                                onClick={() => setSelectedId(row.id)}
+                                                onClick={() => handleSelectRow(row)}
                                             >
                                                 ID: {row.id} { row.nombre ? `Nombre: ${row.nombre}` : `Motivo: ${row.motivo}` }
                                             </button>
@@ -121,7 +132,16 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                                 .map((attr) => (
                                                     <li key={attr} className="flex flex-col">
                                                         <span>{attr.toLocaleUpperCase()}</span>
-                                                        <input type="text" name={attr} placeholder={selectedTableObj?[selectedId] ? "hay algo" : "no hay indice" : "no hay seleccion"} />
+                                                        <input
+                                                            type="text"
+                                                            name={attr}
+                                                            placeholder={attr}
+                                                            value={selectedObj ? String(selectedObj[attr as keyof typeof selectedObj] ?? "") : ""}
+                                                            onChange={(e) => setFormValues(prev => ({
+                                                                ...prev,
+                                                                [attr]: e.target.value
+                                                            }))}
+                                                        />
                                                     </li>
                                                 ))
                                             }
