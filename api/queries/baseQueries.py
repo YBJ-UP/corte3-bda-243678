@@ -17,7 +17,7 @@ class BaseQueries:
         self._pg_pool = pg_pool
         self._redis_client = redis_client
 
-    CACHE_TTL = 300
+    CACHE_TTL = 3600
 
     def __prepare_conn(self, conn: Connection, role: Literal["Administrador", "Recepcionista", "Veterinario"], current_user_id: int | None = None) -> None:
         VALID_ROLES = {"Administrador", "Veterinario", "Recepcionista"}
