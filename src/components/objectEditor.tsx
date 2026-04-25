@@ -93,7 +93,6 @@ export default function ObjectEditor(props: ObjectEditorProps) {
 
     async function submitForm() {
         try {
-            console.log(JSON.stringify(parseFormValues()))
             switch (action) {
                 case "Añadir": {
                     const response = await fetch(`/api/${currentObjName}`, { method: "POST", body: JSON.stringify(parseFormValues()) })

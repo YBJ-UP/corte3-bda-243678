@@ -24,7 +24,7 @@ export async function POST(req: NextRequest, { params }: { params: { name: strin
         const postObj = getPostType(name)
         type postT = typeof postObj
         
-        const body = await req.body as postT
+        const body = await req.json() as postT
 
         const data = await post<reqT, postT>(`/${name}`, req, body)
         return NextResponse.json(data)
