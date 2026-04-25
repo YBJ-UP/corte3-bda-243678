@@ -27,10 +27,10 @@ export default function ObjectEditor(props: ObjectEditorProps) {
         setSelectedId(row.id)
         const values: Record<string, string> = {}
         Object.entries(row).forEach(([key, val]) => {
-            values[key] = String(val ?? "")
+            values[key] = String(val ?? "").trim()
         })
         setFormValues(values)
-        console.log(values)
+        console.log(formValues)
     }
 
     async function setSelectionObj(selection: tabla) {
@@ -142,6 +142,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                                             type="text"
                                                             name={attr}
                                                             placeholder={selectedObj ? String(selectedObj[attr as keyof typeof selectedObj] ?? "") : attr}
+                                                            value={formValues[attr] ?? ""}
                                                             onChange={(e) => setFormValues(prev => ({
                                                                 ...prev,
                                                                 [attr]: e.target.value
@@ -157,10 +158,14 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                             
                             <div className="bg-gray-700 px-15 py-5 rounded-2xl">
                                 <p>Acción:</p>
-                                <p className="font-bold">{action}</p>
+                                <span className="font-bold">{action}</span>
+                                <span> {selectedObj ? String(selectedObj["nombre" as keyof typeof selectedObj] ?? "") : ""}</span>
                             </div>
 
-                            <button type="button" onClick={props.onClose} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
+                            <div className="flex gap-15">
+                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-green-700 hover:bg-green-600 rounded-2xl">Guardar</button>
+                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
+                            </div>
                         </div>
                         
                     </div>
