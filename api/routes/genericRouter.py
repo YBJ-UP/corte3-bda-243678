@@ -58,13 +58,19 @@ def create_routes[T_read, T_add, T_patch](
     def get_by_name(name: str, user: UserQueries = Depends(get_user)) -> Response[T_read]:
         if not table.SEARCH_BY_NAME:
             raise HTTPException(404, f"La búsqueda no está disponible para {table.ALIAS}")
-        return user.getByName(
+
+        res = user.getByName(
             model= read,
             cachePrefix= table.CACHE_PREFIX,
             tableAlias= table.ALIAS,
             query= table.SEARCH_BY_NAME,
             name= name
         )
+
+        if not res["data"]:
+            raise HTTPException(status_code=404, detail=f"No se encontró el {table.ALIAS} buscado")
+        
+        return res
     
     @router.post("", response_model=PatchResponse[add])
     def post(data: add, user: UserQueries = Depends(get_user)) -> PatchResponse[T_add]:

@@ -12,6 +12,24 @@ import { useState } from "react";
 
 export default function Admin() {
     const [ editorOpen, setEditorOpen ] = useState<boolean>(false)
+    const [ busqueda, setBusqueda ] = useState<string>("")
+    const [ searchResult, setSearchResults ] = useState<any[]>([])
+
+    async function search(e: string) {
+        await setBusqueda(e)
+        try {
+            const response = await fetch(`api/pet/search/${busqueda}`)
+            if (!response.ok) {
+                console.error("No se puede")
+            }
+            const json = await response.json()
+            setSearchResults(json.data as any[])
+            console.log(json.data)
+
+        } catch (e: any) {
+            console.error(e.message)
+        }
+    }
 
     return (
         <section className="flex flex-col gap-5">
@@ -23,6 +41,17 @@ export default function Admin() {
                     isOpen={editorOpen}
                     onClose={() => setEditorOpen(false)}
                 />
+            </section>
+            <section>
+                <p>BUSCAR MASCOTAS:</p>
+                <input type="text" name="mascota" id="99191" onChange={(e) => { search(e.target.value.trim()) }} />
+                {searchResult && searchResult.map((r) => (
+                    <p>{r.nombre}</p>
+                ))}
+                {!searchResult && busqueda && (
+                    <p>No se encontró</p>
+                )}
+
             </section>
             <section className="flex flex-col gap-10">
                 <h3 className="text-2xl">DATOS:</h3>

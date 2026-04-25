@@ -25,7 +25,7 @@ export default function Vet() {
                 <h3 className="text-2xl">DATOS:</h3>
                 <ObjectViewer<Required<Pet>> object={emptyPet} name="pet" alias="Mascotas registradas" />
                 <ObjectViewer<Required<Cita>> object={emptyCita} name="date" alias="Citas agendadas" />
-                <ObjectViewer<Required<Vaccine>> object={emptyVaxx} name="date" alias="Citas agendadas" />
+                <ObjectViewer<Required<Vaccine>> object={emptyVaxx} name="vaccine" alias="Vacunas" />
             </section>
         </section>
             
