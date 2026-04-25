@@ -83,11 +83,50 @@ export default function ObjectEditor(props: ObjectEditorProps) {
     }
 
     function parseFormValues() {
-        return
+        const parsedForm: Record<string, any> = {}
+        Object.entries(formValues).forEach(([k, v]) => {
+            const isNumber = Number(v)
+            parsedForm[k] = v === "" ? null : isNaN(isNumber) ? v : isNumber
+        })
+        return parsedForm
     }
 
-    function submitForm() {
-        return
+    async function submitForm() {
+        try {
+            console.log(JSON.stringify(parseFormValues()))
+            switch (action) {
+                case "Añadir": {
+                    const response = await fetch(`/api/${currentObjName}`, { method: "POST", body: JSON.stringify(parseFormValues()) })
+                    if (!response.ok) {
+                        console.error("No se pudieron subir los datos")
+                        throw new Error("No se pudieron subir los datos")
+                    }
+                    break
+                }
+                case "Editar": {
+                    if (!selectedId) { throw new Error("No hay objeto seleccionado") }
+                    const response = await fetch(`/api/${currentObjName}/${selectedId}`, { method: "PATCH", body: JSON.stringify(parseFormValues()) })
+                    if (!response.ok) {
+                        console.error("No se pudieron actualizar los datos")
+                        throw new Error("No se pudieron actualizar los datos")
+                    }
+                    break
+                }
+                case "Eliminar": {
+                    if (!selectedId) { throw new Error("No hay objeto seleccionado") }
+                    const response = await fetch(`/api/${currentObjName}/${selectedId}`, { method: "DELETE" })
+                    if (!response.ok) {
+                        console.error("No se pudieron eliminar los datos")
+                        throw new Error("No se pudieron eliminar los datos")
+                    }
+                    break
+                }
+            }
+        } catch (e:any) {
+            console.error(e.message)
+        } finally {
+            close()
+        }
     }
 
     return (
@@ -179,7 +218,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                             </div>
 
                             <div className="flex gap-15">
-                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-green-700 hover:bg-green-600 rounded-2xl">{action} {selectedObj ? String(selectedObj["nombre" as keyof typeof selectedObj] ?? "") : ""}</button>
+                                <button type="button" onClick={submitForm} className="px-15 py-3 bg-green-700 hover:bg-green-600 rounded-2xl">{action} {selectedObj ? String(selectedObj["nombre" as keyof typeof selectedObj] ?? "") : ""}</button>
                                 <button type="button" onClick={close} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
                             </div>
                         </div>
