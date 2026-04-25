@@ -19,6 +19,7 @@ export default function Admin() {
                 <button type="button" onClick={() => setEditorOpen(true)} className="px-15 py-3 bg-green-600 rounded-2xl">Editar datos</button>
                 <ObjectEditor
                     objects={[tablas.OWNER, tablas.VET, tablas.PET, tablas.DATE, tablas.VAXX]}
+                    permission={["all"]}
                     isOpen={editorOpen}
                     onClose={() => setEditorOpen(false)}
                 />

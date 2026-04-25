@@ -10,6 +10,7 @@ import { useState } from "react"
 
 interface ObjectEditorProps {
     objects: tabla[]
+    permission: ("all" | "add" | "edit" | "delete")[]
     isOpen: boolean
     onClose: () => void
 }
@@ -74,6 +75,21 @@ export default function ObjectEditor(props: ObjectEditorProps) {
         }
     }
 
+    function close() {
+        setSelectedId(null)
+        setFormValues({})
+        setSelectedTableObj(null)
+        props.onClose()
+    }
+
+    function parseFormValues() {
+        return
+    }
+
+    function submitForm() {
+        return
+    }
+
     return (
         <>
             {props.isOpen && (
@@ -106,9 +122,9 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                         className="bg-gray-800"
                                         onChange={(e) => getEditInfo(e.target.value as "Añadir" | "Eliminar" | "Editar")}
                                     >
-                                        <option value="Añadir">Añadir</option>
-                                        <option value="Editar">Editar</option>
-                                        <option value="Eliminar">Eliminar</option>
+                                        {props.permission.find(p => p==="add") || props.permission.find(p => p==="all") ? <option value="Añadir">Añadir</option> : null}
+                                        {props.permission.find(p => p==="edit") || props.permission.find(p => p==="all") ? <option value="Editar">Editar</option> : null}
+                                        {props.permission.find(p => p==="delete") || props.permission.find(p => p==="all") ? <option value="Eliminar">Eliminar</option> : null}
                                     </select>
                                 </div>
                             </div>
@@ -163,8 +179,8 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                             </div>
 
                             <div className="flex gap-15">
-                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-green-700 hover:bg-green-600 rounded-2xl">Guardar</button>
-                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
+                                <button type="button" onClick={props.onClose} className="px-15 py-3 bg-green-700 hover:bg-green-600 rounded-2xl">{action} {selectedObj ? String(selectedObj["nombre" as keyof typeof selectedObj] ?? "") : ""}</button>
+                                <button type="button" onClick={close} className="px-15 py-3 bg-red-700 hover:bg-red-600 rounded-2xl">Cerrar</button>
                             </div>
                         </div>
                         
