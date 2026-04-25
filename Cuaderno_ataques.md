@@ -1,20 +1,56 @@
 # Sección 1: Tres ataques de SQL injection que fallan
-Por cada uno de los tres ataques debes documentar:
-El input exacto que probaste (ej: ' OR '1'='1)
-La pantalla del frontend donde lo metiste (descripción y/o screenshot)
-Screenshot o log mostrando que el ataque falló
-La línea exacta de tu código backend que defendió (archivo y número de línea)
-Tipos de ataques sugeridos (no estás obligado a estos exactos):
-Quote-escape clásico: ' OR '1'='1
-Stacked query: '; DROP TABLE mascotas; --
-Union-based: ' UNION SELECT password FROM ...
+## ATAQUE 1
+- Input usado: **rocky; delete * from mascotas**
+- Captura de pantalla:
+![[Pasted image 20260424223339.png]]
+- Log de demostración:
+![[Pasted image 20260424223039.png]]
+- Línea que lo defendió:
+```python
+elif type == "byName":
+	assert searchName is not None
+	row: T = conn.execute(query, (f"%{searchName}%",)).fetchall()
+```
+En `baseQueries.py`, líneas *142-144*
+## ATAQUE 2
+- Input utilizado: 1='1
+- Captura de pantalla:
+![[Pasted image 20260424223619.png]]
+- Log de prueba:
+![[Pasted image 20260424223743.png]]
+- Línea que lo defendió:
+```python
+elif type == "byName":
+	assert searchName is not None
+	row: T = conn.execute(query, (f"%{searchName}%",)).fetchall()
+```
+En `baseQueries.py`, líneas *142-144*
+## ATAQUE 3
+- Input utilizado: a
+- Captura de pantalla:
+![[Pasted image 20260424224040.png]]
+- Log de evidencia:
+![[Pasted image 20260424224128.png|652]]
+- Línea que lo defendió:
+```python
+elif type == "byName":
+	assert searchName is not None
+	row: T = conn.execute(query, (f"%{searchName}%",)).fetchall()
+```
+En `baseQueries.py`, líneas *142-144*
 # Sección 2: Demostración de RLS en acción
-Setup mínimo: dos veterinarios distintos, cada uno atendiendo mascotas diferentes (ya viene en los datos de
-prueba).
-Debes incluir:
-Screenshot/log del veterinario 1 consultando "todas las mascotas" desde la UI y obteniendo solo las suyas
-Screenshot/log del veterinario 2 haciendo la misma consulta y obteniendo otro conjunto
-Una frase explicando qué política RLS produce ese comportamiento
+## Veterinario 1
+- Captura de pantalla
+![[Pasted image 20260424224327.png]]
+- Log de evidencia
+![[Pasted image 20260424224806.png]]
+## Veterinario 2
+- Captura de pantalla:
+![[Pasted image 20260424224900.png]]
+- Log de evidencia:
+![[Pasted image 20260424224955.png]]
+
+La política RLS selecciona de vet_atiende_mascotas solo a aquellas mascotas que hayan sido atendidas por ese veterinario
 # Sección 3: Demostración de caché Redis funcionando
 Logs (con timestamps) que muestren:
 Primera consulta a vacunación pendiente: cache MISS, latencia típica de BD (~100-300ms)
