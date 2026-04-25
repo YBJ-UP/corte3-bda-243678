@@ -15,9 +15,9 @@ En `baseQueries.py`, líneas *142-144*
 ## ATAQUE 2
 - Input utilizado: 1='1
 - Captura de pantalla:
-![[Pasted image 20260424223619.png]]
+![alt text](image-1.png)
 - Log de prueba:
-![[Pasted image 20260424223743.png]]
+![alt text](image.png)
 - Línea que lo defendió:
 ```python
 elif type == "byName":
@@ -28,9 +28,9 @@ En `baseQueries.py`, líneas *142-144*
 ## ATAQUE 3
 - Input utilizado: a
 - Captura de pantalla:
-![[Pasted image 20260424224040.png]]
+![alt text](image-2.png)
 - Log de evidencia:
-![[Pasted image 20260424224128.png|652]]
+![alt text](image-3.png)
 - Línea que lo defendió:
 ```python
 elif type == "byName":
