@@ -69,6 +69,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
             }
         }
         if (action === "Añadir") {
+            setSelectedTableObj(null)
             setFormValues({})
         }
     }
@@ -140,8 +141,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
                                                         <input
                                                             type="text"
                                                             name={attr}
-                                                            placeholder={attr}
-                                                            value={selectedObj ? String(selectedObj[attr as keyof typeof selectedObj] ?? "") : ""}
+                                                            placeholder={selectedObj ? String(selectedObj[attr as keyof typeof selectedObj] ?? "") : attr}
                                                             onChange={(e) => setFormValues(prev => ({
                                                                 ...prev,
                                                                 [attr]: e.target.value
