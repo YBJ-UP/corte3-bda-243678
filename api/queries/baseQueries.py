@@ -105,16 +105,17 @@ class BaseQueries:
     def _get[T](
             self,
             model: type[T],
-            type: Literal["one","all"],
+            type: Literal["one","all", "byName"],
             cachePrefix: str,
             query: str,
             tableAlias: str,
             role: Literal["Administrador", "Recepcionista", "Veterinario"],
             id: int | None = None,
-            current_user_id: int | None = None
+            current_user_id: int | None = None,
+            searchName: str | None = None
         ) -> Response[T]:
         t0: float = time.perf_counter()
-        cache_key: str = f"{role}:{cachePrefix}:{current_user_id}" if current_user_id is not None else f"{role}:{cachePrefix}"
+        cache_key: str = f"{role}:{cachePrefix}:search:{searchName.lower()}" if searchName is not None else f"{role}:{cachePrefix}:{current_user_id}" if current_user_id is not None else f"{role}:{cachePrefix}"
         print(f"cache para {cache_key}")
 
         cached = self.__get_from_cache(cache_key)
@@ -133,11 +134,14 @@ class BaseQueries:
                 self.__prepare_conn(conn, role, current_user_id)
                 if type == "all":
                     row: T = conn.execute(query).fetchall()
-                else:
+                elif type == "one":
                     assert id is not None
                     row: T = conn.execute(query, (id,)).fetchone()
                     if row is None:
                         raise HTTPException(status_code=404, detail=f"No se encontró el {tableAlias} buscado")
+                elif type == "byName":
+                    assert searchName is not None
+                    row: T = conn.execute(query, (f"%{searchName}%",)).fetchall()
         except InsufficientPrivilege:
             raise HTTPException(403, "Tu rol no tiene el permiso suficiente para esta operación")
 

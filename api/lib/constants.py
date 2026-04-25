@@ -10,6 +10,7 @@ class tabla:
     SELECT_ALL_ADMIN: str | None
     SELECT_ONE_QUERY: str
     SELECT_ONE_ADMIN: str | None
+    SEARCH_BY_NAME: str | None
     DELETE_QUERY: str
 
 TABLES = {
@@ -21,6 +22,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY="SELECT * FROM duenos WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= "SELECT * FROM duenos WHERE nombre ILIKE %s;",
         DELETE_QUERY="DELETE FROM duenos WHERE id=%s RETURNING id;"
     ),
     "VET": tabla(
@@ -31,6 +33,7 @@ TABLES = {
         SELECT_ALL_ADMIN= "SELECT * FROM veterinarios;",
         SELECT_ONE_QUERY="SELECT id, nombre, dias_descanso FROM veterinarios WHERE id=%s AND activo = true",
         SELECT_ONE_ADMIN= "SELECT * FROM veterinarios WHERE id=%s",
+        SEARCH_BY_NAME= "SELECT * FROM veterinarios WHERE nombre ILIKE %s;",
         DELETE_QUERY="DELETE FROM veterinarios WHERE id=%s RETURNING id;"
     ),
     "PET": tabla(
@@ -41,6 +44,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY="SELECT * FROM mascotas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= "SELECT * FROM mascotas WHERE nombre ILIKE %s;",
         DELETE_QUERY="DELETE FROM mascotas WHERE id=%s RETURNING id;"
     ),
     "DATE": tabla(
@@ -51,6 +55,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY="SELECT * FROM citas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= None,
         DELETE_QUERY="DELETE FROM citas WHERE id=%s RETURNING id;"
     ),
     "VAXX": tabla(
@@ -61,6 +66,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY="SELECT * FROM inventario_vacunas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= "SELECT * FROM inventario_vacunas WHERE nombre ILIKE %s;",
         DELETE_QUERY="DELETE FROM inventario_vacunas WHERE id=%s RETURNING id;"
     ),
     "VAC_AP": tabla(
@@ -71,16 +77,18 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY= "SELECT * FROM vacunas_aplicadas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= None,
         DELETE_QUERY= "DELETE FROM vacunas_aplicadas WHERE id=%s RETURNING id;"
     ),
     "VAM": tabla(
         NAME= "vet_atiende_mascota",
         ALIAS="Mascotas atendidas por veterinario",
         CACHE_PREFIX="cache:vap",
-        SELECT_ALL_QUERY="SELECT * FROM vet_atiende_mascotas;",
+        SELECT_ALL_QUERY="SELECT * FROM vet_atiende_mascota;",
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY= "SELECT * FROM vet_atiende_mascotas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= None,
         DELETE_QUERY= "DELETE FROM vet_atiende_mascotas WHERE id=%s RETURNING id;"
     ),
     "HIST": tabla(
@@ -91,6 +99,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY= "SELECT * FROM historial_movimientos WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= None,
         DELETE_QUERY= "DELETE FROM historial_movimientos WHERE id=%s RETURNING id;"
     ),
     "ALERTS": tabla(
@@ -101,6 +110,7 @@ TABLES = {
         SELECT_ALL_ADMIN= None,
         SELECT_ONE_QUERY= "SELECT * FROM alertas WHERE id=%s;",
         SELECT_ONE_ADMIN= None,
+        SEARCH_BY_NAME= None,
         DELETE_QUERY= "DELETE FROM alertas WHERE id=%s RETURNING id;"
     ),
 }

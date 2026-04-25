@@ -1,6 +1,6 @@
 from typing import Literal, Type
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from lib.auth import get_user
 from lib.constants import tabla
@@ -15,13 +15,11 @@ def select_get_query(
     print(f"Seleccionando {"1" if getOne else "muchos"} de {table.NAME} como {role}")
     if not getOne:
         if role == "Administrador" and table.SELECT_ALL_ADMIN is not None:
-            print(f"query de admin: {table.SELECT_ALL_ADMIN}")
             return table.SELECT_ALL_ADMIN
         else:
             return table.SELECT_ALL_QUERY
     else:
         if role == "Administrador" and table.SELECT_ONE_ADMIN is not None:
-            print(f"query de admin: {table.SELECT_ONE_ADMIN}")
             return table.SELECT_ONE_ADMIN
         else:
             return table.SELECT_ONE_QUERY
@@ -54,6 +52,18 @@ def create_routes[T_read, T_add, T_patch](
             id= id,
             tableAlias= table.ALIAS,
             query= selected_query
+        )
+    
+    @router.get('/search/{name}')
+    def get_by_name(name: str, user: UserQueries = Depends(get_user)) -> Response[T_read]:
+        if not table.SEARCH_BY_NAME:
+            raise HTTPException(404, f"La búsqueda no está disponible para {table.ALIAS}")
+        return user.getByName(
+            model= read,
+            cachePrefix= table.CACHE_PREFIX,
+            tableAlias= table.ALIAS,
+            query= table.SEARCH_BY_NAME,
+            name= name
         )
     
     @router.post("", response_model=PatchResponse[add])

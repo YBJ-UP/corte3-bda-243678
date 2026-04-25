@@ -39,6 +39,18 @@ class UserQueries(BaseQueries): # wrapper para ocultar los roles de los endpoint
             current_user_id= self.current_user_id
         )
     
+    def getByName[T](self, model: type[T], cachePrefix: str, tableAlias: str, query: str, name: str) -> Response[T]:
+        return self._get(
+            type= "byName",
+            model= model,
+            cachePrefix= cachePrefix,
+            tableAlias= tableAlias,
+            query= query,
+            role= self.ROLE,
+            current_user_id= self.current_user_id,
+            searchName= name
+        )
+    
     def patch[T](self, model: type[T], cachePrefix: str, id: int, data: T, tableName: str) -> PatchResponse[T]:
         return self._add_or_patch(
             isPatch= True,
