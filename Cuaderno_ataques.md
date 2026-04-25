@@ -53,8 +53,24 @@ En `baseQueries.py`, líneas *142-144*
 La política RLS selecciona de vet_atiende_mascotas solo a aquellas mascotas que hayan sido atendidas por ese veterinario
 # Sección 3: Demostración de caché Redis funcionando
 Logs (con timestamps) que muestren:
-Primera consulta a vacunación pendiente: cache MISS, latencia típica de BD (~100-300ms)
-Segunda consulta inmediata: cache HIT, latencia típica de Redis (~5-20ms)
-POST de aplicación de vacuna que invalida el caché
-Tercera consulta después de la invalidación: cache MISS de nuevo
-Más una explicación de qué key usaste, qué TTL elegiste, y por qué.
+## Primera consulta
+```json
+{ "cache_hit": false, "latency_ms": 11.31, "data": [ { "id": 1, "nombre": "Antirrábica canina", "stock_actual": 25, "stock_minimo": 10, "costo_unitario": 350 }, { "id": 2, "nombre": "Quíntuple felina", "stock_actual": 18, "stock_minimo": 8, "costo_unitario": 480 }, { "id": 3, "nombre": "Parvovirus canino", "stock_actual": 12, "stock_minimo": 5, "costo_unitario": 290 }, { "id": 4, "nombre": "Triple felina", "stock_actual": 7, "stock_minimo": 8, "costo_unitario": 410 }, { "id": 5, "nombre": "Bordetella canina", "stock_actual": 20, "stock_minimo": 10, "costo_unitario": 270 }, { "id": 6, "nombre": "Leucemia felina", "stock_actual": 4, "stock_minimo": 5, "costo_unitario": 520 } ] }
+```
+## Segunda consulta
+```json
+{ "cache_hit": true, "latency_ms": 0.65, "data": [ { "id": 1, "nombre": "Antirrábica canina", "stock_actual": 25, "stock_minimo": 10, "costo_unitario": 350 }, { "id": 2, "nombre": "Quíntuple felina", "stock_actual": 18, "stock_minimo": 8, "costo_unitario": 480 }, { "id": 3, "nombre": "Parvovirus canino", "stock_actual": 12, "stock_minimo": 5, "costo_unitario": 290 }, { "id": 4, "nombre": "Triple felina", "stock_actual": 7, "stock_minimo": 8, "costo_unitario": 410 }, { "id": 5, "nombre": "Bordetella canina", "stock_actual": 20, "stock_minimo": 10, "costo_unitario": 270 }, { "id": 6, "nombre": "Leucemia felina", "stock_actual": 4, "stock_minimo": 5, "costo_unitario": 520 } ] }
+```
+## POST de vacuna
+```json
+{ "message": "Dato actualizado con éxito.", "cache_invalidated": true, "latency_ms": 13.54, "updated_data": { "nombre": "vanuca", "stock_actual": 110, "stock_minimo": 50, "costo_unitario": 111110 } }
+```
+## Tercera consulta
+```json
+{ "cache_hit": false, "latency_ms": 28.52, "data": [ { "id": 1, "nombre": "Antirrábica canina", "stock_actual": 25, "stock_minimo": 10, "costo_unitario": 350 }, { "id": 2, "nombre": "Quíntuple felina", "stock_actual": 18, "stock_minimo": 8, "costo_unitario": 480 }, { "id": 3, "nombre": "Parvovirus canino", "stock_actual": 12, "stock_minimo": 5, "costo_unitario": 290 }, { "id": 4, "nombre": "Triple felina", "stock_actual": 7, "stock_minimo": 8, "costo_unitario": 410 }, { "id": 5, "nombre": "Bordetella canina", "stock_actual": 20, "stock_minimo": 10, "costo_unitario": 270 }, { "id": 6, "nombre": "Leucemia felina", "stock_actual": 4, "stock_minimo": 5, "costo_unitario": 520 }, { "id": 7, "nombre": "vanuca", "stock_actual": 110, "stock_minimo": 50, "costo_unitario": 111110 } ] }
+```
+## Explicación de llaves
+Se utilizó el prefijo `{rol}:cache:{tabla}` para la cuenta de administrador y recepcionista, mientras que se usó `{rol}:cache:{tabla}:{id}` para los veterinarios.
+Esto se hizo para poder distinguir bien qué usuarios están accediendo al caché, mientras que se le añadió el id a la caché por que si no, todos los veterinarios compartirían el mismo caché, llevando a que puedan ver datos que no deberían poder ver.
+## Tiempo de vida utilizado
+Se decidió utilizar un tiempo de vida de 1 hora debido al contexto de la aplicación, típicamente las veterinarias no son tan activas y no necesitan que se cambie el caché tan seguido pero a su vez no de decidió un tiempo de vida demasiado largo,
