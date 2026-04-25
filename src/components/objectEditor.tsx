@@ -30,6 +30,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
             values[key] = String(val ?? "")
         })
         setFormValues(values)
+        console.log(values)
     }
 
     async function setSelectionObj(selection: tabla) {
@@ -49,6 +50,7 @@ export default function ObjectEditor(props: ObjectEditorProps) {
             }
         } else {
             setSelectedTableObj(null)
+            setFormValues({})
         }
     }
 
@@ -65,6 +67,9 @@ export default function ObjectEditor(props: ObjectEditorProps) {
             } catch(e: any) {
                 console.error("Error: ", e.message)
             }
+        }
+        if (action === "Añadir") {
+            setFormValues({})
         }
     }
 
