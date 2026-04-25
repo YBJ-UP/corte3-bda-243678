@@ -21,6 +21,7 @@ export async function request<T, R>(req: NextRequest, method: string, path: stri
     }
     
     const headers = await buildHeaders(req)
+    console.log(body)
 
     const response = await fetch(new URL(path, BASE), {
         method,
