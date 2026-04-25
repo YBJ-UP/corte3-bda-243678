@@ -1,10 +1,20 @@
 Esta es una aplicación web full stack para una plataforma de veterinaria.
 ## ¿Qué política RLS aplicaste a la tabla mascotas?
-Pega la cláusula exacta y explica con tus palabras qué hace.
+```sql
+CREATE POLICY mascotas_vet ON mascotas
+    FOR ALL TO veterinario 
+    USING (
+        id IN (
+            SELECT mascota_id 
+            FROM vet_atiende_mascota 
+            WHERE vet_id = current_setting('app.current_id')::int
+        )
+    );
+```
+Esta política hace un select en vet_atiende_mascotas, filtrándolo por el id del usuario actual y solo devuelve los ids de las mascotas que se hayan seleccionado.
 ## Cualquiera que sea la estrategia que elegiste para identificar al veterinario actual en RLS, tiene un vector de ataque posible. ¿Cuál es? ¿Tu sistema lo previene? ¿Cómo?
-## Si usas SECURITY DEFINER en algún procedure, ¿qué medida específica tomaste para prevenir la escalada de
-privilegios que ese modo habilita? Si no lo usas, justifica por qué no era necesario.
 ## ¿Qué TTL le pusiste al caché Redis y por qué ese valor específico? ¿Qué pasaría si fuera demasiado bajo? ¿Demasiado alto?
+El tiempo de vida del caché de Redis es de una hora, se decidió este valor ya que es para un negocio que no ve actividad continua, pero no se escogió una duración más alta para evitar consumo de memoria innecesario. Si este fuese más bajo, existiría la posibilidad de que varios usuarios intenten acceder al caché poco después de que este expirara, haciendo conexiones excesivas a la base de datos.
 ## Manejo de inputs en el backend
 Ya que el backend utiliza psycopg y pydantic, no se hacen muchas verificaciones explícitas debido a que estas librerías ya las manejan, sin embargo, se hace lo siguiente:
 1. Queries parametrizadas:
@@ -46,5 +56,6 @@ Esto se hace con todas las queries
 ```
 En este fragmento se preparan las consultas para PATCH y POST de manera que sean consultas parametrizadas, asegurando que no se puedan hacer inyecciones SQL.
 ## Si revocas todos los permisos del rol de veterinario excepto SELECT en mascotas, ¿qué deja de funcionar en tu sistema?
-Lista tres operaciones que se romperían.
-1. 
+1. No se podrían actualizar los datos de las mascotas
+2. No aplicarían todas las políticas de RLS
+3. Sinceramente no veo una tercera cosa profe :c
