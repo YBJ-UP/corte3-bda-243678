@@ -41,14 +41,14 @@ En `baseQueries.py`, líneas *142-144*
 # Sección 2: Demostración de RLS en acción
 ## Veterinario 1
 - Captura de pantalla
-![[Pasted image 20260424224327.png]]
+![alt text](image-4.png)
 - Log de evidencia
-![[Pasted image 20260424224806.png]]
+![alt text](image-5.png)
 ## Veterinario 2
 - Captura de pantalla:
-![[Pasted image 20260424224900.png]]
+![alt text](image-6.png)
 - Log de evidencia:
-![[Pasted image 20260424224955.png]]
+![alt text](image-7.png)
 
 La política RLS selecciona de vet_atiende_mascotas solo a aquellas mascotas que hayan sido atendidas por ese veterinario
 # Sección 3: Demostración de caché Redis funcionando
